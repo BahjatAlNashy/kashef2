@@ -41,7 +41,7 @@
                         <span class="badge bg-primary">موظف</span>
                     @endif
                 </td>
-                <td><small>{{ $user->created_at->format('Y-m-d') }}</small></td>
+                <td><small>{{ $user->created_at?->format('Y-m-d') }}</small></td>
                 <td>
                     <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-info">تعديل</a>
                     @if($user->id !== auth()->id())
