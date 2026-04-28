@@ -21,7 +21,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'username', 'password', 'role',
+        'name', 'email', 'password', 'role',
     ];
 
     // أضف علاقة عكسية (اختيارية)

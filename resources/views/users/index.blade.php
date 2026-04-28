@@ -24,7 +24,8 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>اسم المستخدم</th>
+                <th>الاسم</th>
+                <th>البريد الإلكتروني</th>
                 <th>الدور</th>
                 <th>تاريخ الإنشاء</th>
                 <th>إجراءات</th>
@@ -33,7 +34,8 @@
         <tbody>
             @foreach($users as $user)
             <tr>
-                <td>{{ $user->username }}</td>
+                <td>{{ $user->name }}</td>
+                <td>{{ $user->email }}</td>
                 <td>
                     @if($user->role == 'manager')
                         <span class="badge bg-danger">مدير</span>

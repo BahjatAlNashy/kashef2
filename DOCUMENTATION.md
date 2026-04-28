@@ -47,7 +47,8 @@
 
 ### جدول users
 - **id**: المفتاح الأساسي
-- **username**: اسم المستخدم (unique) ✅ **إجباري**
+- **name**: الاسم ✅ **إجباري**
+- **email**: البريد الإلكتروني (unique) ✅ **إجباري**
 - **password**: كلمة المرور (hashed) ✅ **إجباري**
 - **role**: الدور (in: manager, employee) ✅ **إجباري**
 - **created_at**: تاريخ الإنشاء
@@ -145,10 +146,10 @@
 - `index()`: عرض جميع المستخدمين (مدير فقط)
 - `create()`: عرض نموذج إنشاء مستخدم (مدير فقط)
 - `store(Request $request)`: حفظ مستخدم جديد (مدير فقط)
-  - الحقول: username (unique), password, role
+  - الحقول: name, email (unique), password, role
 - `edit(User $user)`: عرض نموذج تعديل مستخدم (مدير فقط)
 - `update(Request $request, User $user)`: تحديث مستخدم (مدير فقط)
-  - يمكن تغيير username و role
+  - يمكن تغيير name, email, role
   - يمكن تغيير password (اختياري)
 - `destroy(User $user)`: حذف مستخدم (مدير فقط)
   - يحذف المستخدم مع الاحتفاظ بكشوفاته (created_by = null)
@@ -281,15 +282,11 @@
 
 ### 7. إدارة المستخدمين (مدير فقط)
 - عرض جميع المستخدمين مع عداد في الصفحة الرئيسية
-- إنشاء مستخدم جديد (username, password, role)
-- تعديل المستخدم (username, role, password اختياري)
+- إنشاء مستخدم جديد (name, email, password, role)
+- تعديل المستخدم (name, email, role, password اختياري)
 - حذف المستخدم مع الاحتفاظ بكشوفاته
 - نموذج أفقي لإنشاء وتعديل المستخدمين
 - إشعارات صغيرة قابلة للإغلاق
-
-### 8. تسجيل الدخول بـ username
-- استخدام username بدلاً من email لتسجيل الدخول
-- username فريد لكل مستخدم
 
 ---
 
@@ -341,9 +338,9 @@
 ```bash
 php artisan tinker
 >>> $user = new App\Models\User();
->>> $user->name = 'اسم المدير';
->>> $user->email = 'manager@example.com';
->>> $user->password = bcrypt('password');
+>>> $user->name = 'مدير النظام';
+>>> $user->email = 'admin@example.com';
+>>> $user->password = bcrypt('admin123');
 >>> $user->role = 'manager';
 >>> $user->save();
 ```

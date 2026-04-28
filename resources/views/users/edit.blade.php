@@ -7,11 +7,19 @@
         @csrf @method('PUT')
         <div class="card">
             <div class="card-body">
-                {{-- اسم المستخدم --}}
+                {{-- الاسم --}}
                 <div class="row mb-3">
-                    <label class="col-md-3 col-form-label fw-bold text-md-end">اسم المستخدم:</label>
+                    <label class="col-md-3 col-form-label fw-bold text-md-end">الاسم:</label>
                     <div class="col-md-9">
-                        <input type="text" name="username" value="{{ $user->username }}" class="form-control" required>
+                        <input type="text" name="name" value="{{ $user->name }}" class="form-control" required>
+                    </div>
+                </div>
+
+                {{-- البريد الإلكتروني --}}
+                <div class="row mb-3">
+                    <label class="col-md-3 col-form-label fw-bold text-md-end">البريد الإلكتروني:</label>
+                    <div class="col-md-9">
+                        <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
                         <small class="text-muted">يجب أن يكون فريداً (unique)</small>
                     </div>
                 </div>
