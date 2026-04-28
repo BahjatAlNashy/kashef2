@@ -31,8 +31,8 @@ return new class extends Migration
             $table->string('maintenance_head');                      // 16-ر.د الصيانة والدعم الفني
             $table->string('it_manager');                            // 17-مدير المعلوماتية
             $table->enum('status', ['قيد التنفيذ', 'تم الإنجاز', 'تم الإلغاء'])->default('قيد التنفيذ');
-            $table->foreignId('created_by')->constrained('users');   // من أنشأ الكشف
-            $table->foreignId('status_changed_by')->nullable()->constrained('users'); // من غيّر الحالة
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();   // من أنشأ الكشف
+            $table->foreignId('status_changed_by')->nullable()->constrained('users')->nullOnDelete(); // من غيّر الحالة
             $table->timestamp('status_changed_at')->nullable();
             $table->timestamps();
         });

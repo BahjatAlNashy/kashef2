@@ -38,6 +38,6 @@ Route::middleware('auth')->group(function () {
 
     // إدارة المستخدمين (مدير فقط)
     Route::middleware('role:manager')->group(function () {
-        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy']);
+        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     });
 });

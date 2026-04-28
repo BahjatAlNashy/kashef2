@@ -6,16 +6,27 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h3>لوحة التحكم - نظام إدارة الصيانة والمستودع</h3>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
+                            {{-- إدارة المستخدمين - منفصل ومميز --}}
                             @if(auth()->user()->role == 'manager')
-                                <button onclick="filterByStatus('all')" class="btn btn-secondary">الكل</button>
-                                <button onclick="filterByStatus('قيد التنفيذ')" class="btn btn-warning">قيد التنفيذ ({{ $reports->where('status', 'قيد التنفيذ')->count() }})</button>
-                                <button onclick="filterByStatus('completed')" class="btn btn-success">تم الإنجاز والإلغاء ({{ $reports->whereIn('status', ['تم الإنجاز', 'تم الإلغاء'])->count() }})</button>
+                                <div class="border-end pe-2 me-2">
+                                    <a href="{{ route('users.index') }}" class="btn btn-dark">
+                                        <i class="fas fa-users"></i> إدارة المستخدمين
+                                        <span class="badge bg-light text-dark ms-1">{{ \App\Models\User::count() }}</span>
+                                    </a>
+                                </div>
+
+                                {{-- فلاتر الحالة --}}
+                                <button id="btn-all" onclick="filterByStatus('all')" class="btn btn-secondary active-filter">الكل</button>
+                                <button id="btn-pending" onclick="filterByStatus('قيد التنفيذ')" class="btn btn-warning text-dark">قيد التنفيذ ({{ $reports->where('status', 'قيد التنفيذ')->count() }})</button>
+                                <button id="btn-completed" onclick="filterByStatus('completed')" class="btn btn-success">تم الإنجاز والإلغاء ({{ $reports->whereIn('status', ['تم الإنجاز', 'تم الإلغاء'])->count() }})</button>
                             @endif
-                            <a href="{{ route('maintenance-reports.create') }}" class="btn btn-success">إنشاء كشف فني</a>
-                            <a href="{{ route('warehouse-deliveries.create') }}" class="btn btn-primary">إنشاء تسليم مستودع</a>
+
+                            {{-- أزرار الإنشاء --}}
+                            <a href="{{ route('maintenance-reports.create') }}" class="btn btn-success">+ كشف فني</a>
+                            <a href="{{ route('warehouse-deliveries.create') }}" class="btn btn-primary">+ تسليم مستودع</a>
                         </div>
                     </div>
                 </div>
@@ -139,6 +150,21 @@ let currentStatusFilter = 'all';
 
 function filterByStatus(status) {
     currentStatusFilter = status;
+
+    // تحديث شكل الأزرار
+    document.getElementById('btn-all').classList.remove('active-filter');
+    document.getElementById('btn-pending').classList.remove('active-filter');
+    document.getElementById('btn-completed').classList.remove('active-filter');
+
+    // إضافة الشكل النشط للزر المحدد
+    if (status === 'all') {
+        document.getElementById('btn-all').classList.add('active-filter');
+    } else if (status === 'قيد التنفيذ') {
+        document.getElementById('btn-pending').classList.add('active-filter');
+    } else if (status === 'completed') {
+        document.getElementById('btn-completed').classList.add('active-filter');
+    }
+
     filterReports();
 }
 
@@ -200,4 +226,29 @@ document.addEventListener('DOMContentLoaded', function() {
     filterReports();
 });
 </script>
+
+<style>
+/* تأثير الزر النشط - يظهر كأنه مضغوط */
+.active-filter {
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
+    transform: translateY(1px);
+    border: 2px solid #000 !important;
+}
+
+/* تأثيرات إضافية للزر النشط حسب نوعه */
+#btn-all.active-filter {
+    background-color: #5a6268 !important;
+    border-color: #000 !important;
+}
+
+#btn-pending.active-filter {
+    background-color: #d39e00 !important;
+    border-color: #000 !important;
+}
+
+#btn-completed.active-filter {
+    background-color: #1e7e34 !important;
+    border-color: #000 !important;
+}
+</style>
 @endsection
