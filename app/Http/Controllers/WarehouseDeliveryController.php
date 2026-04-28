@@ -33,13 +33,13 @@ class WarehouseDeliveryController extends Controller
     {
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
-            'device_type' => 'required|string|max:255',
+            'device_type' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255|unique:warehouse_deliveries',
             'description' => 'nullable|string',
             'checked_by' => 'required|string|max:255',
             'date' => 'nullable|date',
-            'maintenance_manager' => 'required|string|max:255',
-            'it_manager' => 'required|string|max:255',
+            'maintenance_manager' => 'nullable|string|max:255',
+            'it_manager' => 'nullable|string|max:255',
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -69,13 +69,13 @@ class WarehouseDeliveryController extends Controller
         }
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
-            'device_type' => 'required|string|max:255',
+            'device_type' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255|unique:warehouse_deliveries,serial_number,'.$warehouseDelivery->id,
             'description' => 'nullable|string',
             'checked_by' => 'required|string|max:255',
-            'date' => 'required|date',
-            'maintenance_manager' => 'required|string|max:255',
-            'it_manager' => 'required|string|max:255',
+            'date' => 'nullable|date',
+            'maintenance_manager' => 'nullable|string|max:255',
+            'it_manager' => 'nullable|string|max:255',
         ]);
 
         $warehouseDelivery->update($validated);

@@ -34,10 +34,10 @@ class MaintenanceReportController extends Controller
     {
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
-            'reporter_name' => 'required|string|max:255',
+            'reporter_name' => 'nullable|string|max:255',
             'report_date' => 'nullable|date',
-            'device_name' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'device_name' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255|unique:maintenance_reports',
             'initial_inspection' => 'nullable|string',
             'failure_cause' => 'nullable|in:طبيعي,سوء استخدام,غير ذلك',
@@ -47,9 +47,9 @@ class MaintenanceReportController extends Controller
             'maintenance_procedure' => 'nullable|in:الاستلام من المستودع,في الصيانة الخارجية',
             'post_maintenance_notes' => 'nullable|string',
             'request_party_sign_after' => 'nullable|string|max:255',
-            'technician_sign_after' => 'nullable|string|max:255',
-            'maintenance_head' => 'required|string|max:255',
-            'it_manager' => 'required|string|max:255',
+            'technician_sign_after' => 'required|string|max:255',
+            'maintenance_head' => 'nullable|string|max:255',
+            'it_manager' => 'nullable|string|max:255',
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -83,10 +83,10 @@ class MaintenanceReportController extends Controller
         }
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
-            'reporter_name' => 'required|string|max:255',
-            'report_date' => 'required|date',
-            'device_name' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'reporter_name' => 'nullable|string|max:255',
+            'report_date' => 'nullable|date',
+            'device_name' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255|unique:maintenance_reports,serial_number,'.$maintenanceReport->id,
             'initial_inspection' => 'nullable|string',
             'failure_cause' => 'nullable|in:طبيعي,سوء استخدام,غير ذلك',
@@ -96,9 +96,9 @@ class MaintenanceReportController extends Controller
             'maintenance_procedure' => 'nullable|in:الاستلام من المستودع,في الصيانة الخارجية',
             'post_maintenance_notes' => 'nullable|string',
             'request_party_sign_after' => 'nullable|string|max:255',
-            'technician_sign_after' => 'nullable|string|max:255',
-            'maintenance_head' => 'required|string|max:255',
-            'it_manager' => 'required|string|max:255',
+            'technician_sign_after' => 'required|string|max:255',
+            'maintenance_head' => 'nullable|string|max:255',
+            'it_manager' => 'nullable|string|max:255',
         ]);
 
         $maintenanceReport->update($validated);

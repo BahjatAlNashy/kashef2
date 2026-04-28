@@ -9,23 +9,23 @@
 
 ### جدول maintenance_reports
 - **id**: المفتاح الأساسي
-- **requesting_party**: الجهة طالبة الصيانة (required)
-- **reporter_name**: الاسم والكنية (required)
+- **requesting_party**: الجهة طالبة الصيانة ✅ **إجباري**
+- **reporter_name**: الاسم والكنية (nullable)
 - **report_date**: تاريخ الإبلاغ (nullable)
-- **device_name**: اسم الجهاز (required)
-- **brand**: الماركة (required)
+- **device_name**: اسم الجهاز (nullable)
+- **brand**: الماركة (nullable)
 - **serial_number**: الرقم التسلسلي (nullable, unique)
 - **initial_inspection**: الكشف الفني الأولي (nullable)
 - **failure_cause**: سبب العطل (nullable, in: طبيعي,سوء استخدام,غير ذلك)
-- **request_party_sign_before**: اسم وتوقيع الجهة قبل الصيانة (required)
-- **technician_sign_before**: اسم وتوقيع المسؤول الفني قبل الصيانة (required)
+- **request_party_sign_before**: اسم وتوقيع الجهة الطالبة (قبل الصيانة) ✅ **إجباري**
+- **technician_sign_before**: اسم وتوقيع المسؤول الفني (قبل الصيانة) ✅ **إجباري**
 - **device_location**: مكان تواجد الجهاز (nullable, in: لدى صاحب العلاقة,في دائرة الصيانة,في الصيانة الخارجية)
 - **maintenance_procedure**: الإجراءات المتبعة (nullable, in: الاستلام من المستودع,في الصيانة الخارجية)
 - **post_maintenance_notes**: الحالة الفنية بعد الصيانة والملاحظات (nullable)
 - **request_party_sign_after**: اسم وتوقيع الجهة بعد الصيانة (nullable)
-- **technician_sign_after**: اسم وتوقيع المسؤول الفني بعد الصيانة (nullable)
-- **maintenance_head**: ر.د الصيانة والدعم الفني (required)
-- **it_manager**: مدير المعلوماتية (required)
+- **technician_sign_after**: اسم وتوقيع المسؤول الفني (بعد الصيانة) ✅ **إجباري**
+- **maintenance_head**: ر.د الصيانة والدعم الفني (nullable)
+- **it_manager**: مدير المعلوماتية (nullable)
 - **status**: حالة الكشف (default: قيد التنفيذ, in: قيد التنفيذ,تم الإنجاز,تم الإلغاء)
 - **created_by**: معرف المستخدم الذي أنشأ الكشف (foreign key on users)
 - **created_at**: تاريخ الإنشاء
@@ -33,14 +33,14 @@
 
 ### جدول warehouse_deliveries
 - **id**: المفتاح الأساسي
-- **device_type**: نوع الجهاز (required)
+- **device_type**: نوع الجهاز (nullable)
 - **serial_number**: الرقم التسلسلي (nullable)
-- **requesting_party**: الجهة الطالبة (required)
+- **requesting_party**: الجهة الطالبة ✅ **إجباري**
 - **description**: الوصف (nullable)
 - **date**: التاريخ (nullable)
-- **checked_by**: تم الفحص من قبل (required)
-- **maintenance_manager**: مدير الصيانة والدعم الفني (required)
-- **it_manager**: مدير المعلوماتية (required)
+- **checked_by**: تم الفحص من قبل ✅ **إجباري**
+- **maintenance_manager**: مدير الصيانة والدعم الفني (nullable)
+- **it_manager**: مدير المعلوماتية (nullable)
 - **created_by**: معرف المستخدم الذي أنشأ التسليم (foreign key on users)
 - **created_at**: تاريخ الإنشاء
 - **updated_at**: تاريخ التعديل
@@ -53,6 +53,32 @@
 - **role**: الدور (in: manager, employee)
 - **created_at**: تاريخ الإنشاء
 - **updated_at**: تاريخ التعديل
+
+---
+
+## ملخص الحقول الإجبارية
+
+### الكشف الفني (Maintenance Reports)
+الحقول الإجبارية عند الإنشاء والتعديل:
+
+| الحقل | الوصف |
+|-------|-------|
+| `requesting_party` | الجهة طالبة الصيانة |
+| `request_party_sign_before` | اسم وتوقيع الجهة الطالبة (قبل الصيانة) |
+| `technician_sign_before` | اسم وتوقيع المسؤول الفني (قبل الصيانة) |
+| `technician_sign_after` | اسم وتوقيع المسؤول الفني (بعد الصيانة) |
+
+**ملاحظة**: جميع الحقول الأخرى اختيارية (nullable).
+
+### تسليم المستودع (Warehouse Deliveries)
+الحقول الإجبارية عند الإنشاء والتعديل:
+
+| الحقل | الوصف |
+|-------|-------|
+| `requesting_party` | الجهة الطالبة |
+| `checked_by` | تم الفحص من قبل |
+
+**ملاحظة**: جميع الحقول الأخرى اختيارية (nullable).
 
 ---
 
@@ -318,7 +344,14 @@ php artisan tinker
 
 ## تاريخ التعديلات
 
-### 28 أبريل 2026
+### 28 أبريل 2026 (مساءً)
+- تعديل الحقول الإجبارية في الكشوفات:
+  - الكشف الفني: 4 حقول إجبارية فقط (الجهة الطالبة + توقيع الجهة الطالبة + توقيع المسؤول الفني قبل وبعد الصيانة)
+  - تسليم المستودع: حقلين إجباريين فقط (الجهة الطالبة + تم الفحص من قبل)
+- إضافة توثيق شاملة للحقول الإجبارية
+- تحديث ملف DOCUMENTATION.md
+
+### 28 أبريل 2026 (صباحاً)
 - دمج صفحات index في الصفحة الرئيسية
 - إضافة البحث الفوري في الصفحة الرئيسية
 - إضافة الفلترة حسب الحالة للمدير

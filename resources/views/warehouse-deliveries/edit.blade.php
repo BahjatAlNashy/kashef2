@@ -10,7 +10,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label class="fw-bold">نوع الجهاز:</label>
-                        <input type="text" name="device_type" value="{{ $warehouseDelivery->device_type }}" class="form-control" required>
+                        <input type="text" name="device_type" value="{{ $warehouseDelivery->device_type }}" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="fw-bold">الرقم التسلسلي:</label>
@@ -30,7 +30,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="fw-bold">التاريخ:</label>
-                        <input type="date" name="date" value="{{ $warehouseDelivery->date }}" class="form-control" required>
+                        <input type="date" name="date" value="{{ $warehouseDelivery->date }}" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">تم الفحص من قبل:</label>
@@ -41,11 +41,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="fw-bold">مدير الصيانة والدعم الفني:</label>
-                        <input type="text" name="maintenance_manager" value="{{ $warehouseDelivery->maintenance_manager }}" class="form-control" required>
+                        <input type="text" name="maintenance_manager" value="{{ $warehouseDelivery->maintenance_manager }}" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">مدير المعلوماتية:</label>
-                        <input type="text" name="it_manager" value="{{ $warehouseDelivery->it_manager }}" class="form-control" required>
+                        <input type="text" name="it_manager" value="{{ $warehouseDelivery->it_manager }}" class="form-control">
                     </div>
                 </div>
             </div>

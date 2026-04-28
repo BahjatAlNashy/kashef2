@@ -15,7 +15,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">الاسم والكنية:</label>
-                        <input type="text" name="reporter_name" value="{{ $maintenanceReport->reporter_name }}" class="form-control" required>
+                        <input type="text" name="reporter_name" value="{{ $maintenanceReport->reporter_name }}" class="form-control">
                     </div>
                 </div>
 
@@ -23,11 +23,11 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label class="fw-bold">اسم الجهاز:</label>
-                        <input type="text" name="device_name" value="{{ $maintenanceReport->device_name }}" class="form-control" required>
+                        <input type="text" name="device_name" value="{{ $maintenanceReport->device_name }}" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="fw-bold">الماركة:</label>
-                        <input type="text" name="brand" value="{{ $maintenanceReport->brand }}" class="form-control" required>
+                        <input type="text" name="brand" value="{{ $maintenanceReport->brand }}" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="fw-bold">الرقم التسلسلي:</label>
@@ -39,7 +39,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="fw-bold">تاريخ الإبلاغ:</label>
-                        <input type="date" name="report_date" value="{{ optional($maintenanceReport->report_date)->format('Y-m-d') }}" class="form-control" required>
+                        <input type="date" name="report_date" value="{{ optional($maintenanceReport->report_date)->format('Y-m-d') }}" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">سبب العطل:</label>
@@ -109,7 +109,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">اسم وتوقيع المسؤول الفني بعد الصيانة:</label>
-                        <input type="text" name="technician_sign_after" value="{{ $maintenanceReport->technician_sign_after }}" class="form-control">
+                        <input type="text" name="technician_sign_after" value="{{ $maintenanceReport->technician_sign_after }}" class="form-control" required>
                     </div>
                 </div>
 
@@ -120,11 +120,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
-                        <input type="text" name="maintenance_head" value="{{ $maintenanceReport->maintenance_head }}" class="form-control" required>
+                        <input type="text" name="maintenance_head" value="{{ $maintenanceReport->maintenance_head }}" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">مدير المعلوماتية:</label>
-                        <input type="text" name="it_manager" value="{{ $maintenanceReport->it_manager }}" class="form-control" required>
+                        <input type="text" name="it_manager" value="{{ $maintenanceReport->it_manager }}" class="form-control">
                     </div>
                 </div>
             </div>

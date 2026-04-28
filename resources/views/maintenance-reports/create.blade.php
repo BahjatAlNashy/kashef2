@@ -15,11 +15,11 @@
                     </div>
                     <div class="col-md-4">
                         <label class="fw-bold">الاسم والكنية:</label>
-                        <input type="text" name="reporter_name" class="form-control" required>
+                        <input type="text" name="reporter_name" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="fw-bold">اسم الجهاز:</label>
-                        <input type="text" name="device_name" class="form-control" required>
+                        <input type="text" name="device_name" class="form-control">
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label class="fw-bold">الماركة:</label>
-                        <input type="text" name="brand" class="form-control" required>
+                        <input type="text" name="brand" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="fw-bold">الرقم التسلسلي:</label>
@@ -108,7 +108,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">اسم وتوقيع المسؤول الفني بعد الصيانة:</label>
-                        <input type="text" name="technician_sign_after" class="form-control">
+                        <input type="text" name="technician_sign_after" class="form-control" required>
                     </div>
                 </div>
 
@@ -119,11 +119,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
-                        <input type="text" name="maintenance_head" class="form-control" required>
+                        <input type="text" name="maintenance_head" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">مدير المعلوماتية:</label>
-                        <input type="text" name="it_manager" class="form-control" required>
+                        <input type="text" name="it_manager" class="form-control">
                     </div>
                 </div>
             </div>
