@@ -6,15 +6,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseDeliveryController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
-Route::get('/fix-password', function () {
-    $user = User::first(); // سيأخذ أول مستخدم في قاعدة البيانات
-    $user->password = Hash::make('12345678'); // سيشفر كلمة المرور الجديدة
-    $user->save();
-    return "تم تحديث كلمة المرور بنجاح! جرب الدخول الآن بكلمة 12345678";
-});
 Route::get('/', function () {
     return redirect()->route('login');
 });
