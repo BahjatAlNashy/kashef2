@@ -12,14 +12,14 @@
                             {{-- إدارة المستخدمين - منفصل ومميز --}}
                             @if(auth()->user()->role == 'manager')
                                 <div class="border-end pe-2 me-2">
-                                    <a href="{{ route('users.index') }}" class="btn btn-dark">
+                                    <a href="{{ route('users.index') }}" class="btn btn-info">
                                         <i class="fas fa-users"></i> إدارة المستخدمين
                                         <span class="badge bg-light text-dark ms-1">{{ \App\Models\User::count() }}</span>
                                     </a>
                                 </div>
 
                                 {{-- فلاتر الحالة --}}
-                                <button id="btn-all" onclick="filterByStatus('all')" class="btn btn-secondary active-filter">الكل</button>
+                                <button id="btn-all" onclick="filterByStatus('all')" class="btn btn-info active-filter">الكل</button>
                                 <button id="btn-pending" onclick="filterByStatus('قيد التنفيذ')" class="btn btn-warning text-dark">قيد التنفيذ ({{ $reports->where('status', 'قيد التنفيذ')->count() }})</button>
                                 <button id="btn-completed" onclick="filterByStatus('completed')" class="btn btn-success">تم الإنجاز والإلغاء ({{ $reports->whereIn('status', ['تم الإنجاز', 'تم الإلغاء'])->count() }})</button>
                             @endif
@@ -53,7 +53,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
+                                <table class="table table-bordered table-striped" id="reports-table">
                                     <thead>
                                         <tr>
                                             <th>النوع</th>
@@ -224,7 +224,121 @@ function performSearch() {
 // تطبيق الفلتر عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     filterReports();
+    // بدء التحديث الفوري
+    startPolling();
 });
+
+// متغيرات للتحديث الفوري
+let lastTimestamp = 0;
+let pollingInterval = null;
+
+function startPolling() {
+    // جلب البيانات كل 5 ثواني
+    pollingInterval = setInterval(fetchReports, 5000);
+}
+
+function fetchReports() {
+    fetch('{{ route('api.reports') }}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.timestamp > lastTimestamp) {
+                lastTimestamp = data.timestamp;
+                updateTable(data.reports, data.deliveries);
+            }
+        })
+        .catch(error => console.error('Error fetching reports:', error));
+}
+
+function updateTable(newReports, newDeliveries) {
+    const tbody = document.querySelector('#reports-table tbody');
+    if (!tbody) return;
+
+    // حفظ الفلتر الحالي
+    const currentFilter = document.getElementById('filter-type').value;
+    const currentStatusFilter = currentStatusFilter;
+
+    // مسح الجدول الحالي
+    tbody.innerHTML = '';
+
+    // إضافة الكشوفات الفنية
+    newReports.forEach(report => {
+        const row = createReportRow(report);
+        tbody.appendChild(row);
+    });
+
+    // إضافة تسليمات المستودع
+    newDeliveries.forEach(delivery => {
+        const row = createDeliveryRow(delivery);
+        tbody.appendChild(row);
+    });
+
+    // إعادة تطبيق الفلتر
+    filterReports();
+}
+
+function createReportRow(report) {
+    const tr = document.createElement('tr');
+    tr.className = 'report-row';
+    tr.setAttribute('data-type', 'maintenance');
+    tr.setAttribute('data-status', report.status);
+    tr.setAttribute('data-search', `${report.serial_number} ${report.requesting_party} ${report.device_name}`.toLowerCase());
+
+    const statusBadge = getStatusBadge(report.status);
+
+    tr.innerHTML = `
+        <td>
+            <a href="{{ route('maintenance-reports.show', ':id') }}".replace(':id', report.id)" class="btn btn-sm btn-info">
+                <i class="fas fa-eye"></i> عرض
+            </a>
+        </td>
+        <td>${report.serial_number || '-'}</td>
+        <td>${report.requesting_party}</td>
+        <td>${report.device_name || '-'}</td>
+        <td>${report.brand || '-'}</td>
+        <td>${statusBadge}</td>
+        <td>${report.report_date}</td>
+        <td>${report.creator ? report.creator.name : '-'}</td>
+        <td>
+            <a href="{{ route('maintenance-reports.edit', ':id') }}".replace(':id', report.id)" class="btn btn-sm btn-warning">
+                <i class="fas fa-edit"></i> تعديل
+            </a>
+        </td>
+    `;
+
+    return tr;
+}
+
+function getStatusBadge(status) {
+    const badges = {
+        'قيد التنفيذ': '<span class="badge bg-warning text-dark">قيد التنفيذ</span>',
+        'تم الإنجاز': '<span class="badge bg-success">تم الإنجاز</span>',
+        'تم الإلغاء': '<span class="badge bg-danger">تم الإلغاء</span>'
+    };
+    return badges[status] || '<span class="badge bg-secondary">' + status + '</span>';
+}
+
+function createDeliveryRow(delivery) {
+    const tr = document.createElement('tr');
+    tr.className = 'report-row';
+    tr.setAttribute('data-type', 'warehouse');
+    tr.setAttribute('data-status', 'none');
+    tr.setAttribute('data-search', `${delivery.serial_number} ${delivery.requesting_party} ${delivery.device_type}`.toLowerCase());
+
+    tr.innerHTML = `
+        <td><span class="badge bg-primary">تسليم مستودع</span></td>
+        <td>${delivery.requesting_party}</td>
+        <td>${delivery.device_type}</td>
+        <td>${delivery.serial_number || '-'}</td>
+        <td>${delivery.created_at ? new Date(delivery.created_at).toISOString().split('T')[0] : '-'}</td>
+        <td>-</td>
+        <td>
+            <a href="{{ route('warehouse-deliveries.show', ':id') }}".replace(':id', delivery.id)" class="btn btn-sm btn-info">عرض</a>
+            <a href="{{ route('warehouse-deliveries.edit', ':id') }}".replace(':id', delivery.id)" class="btn btn-sm btn-warning">تعديل</a>
+        </td>
+    `;
+
+    return tr;
+}
 </script>
 
 <style>
@@ -237,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* تأثيرات إضافية للزر النشط حسب نوعه */
 #btn-all.active-filter {
-    background-color: #5a6268 !important;
+    background-color: #0dcaf0 !important;
     border-color: #000 !important;
 }
 
