@@ -6,24 +6,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseDeliveryController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Illuminate\Support\Facades\Route;
-
-Route::get('/setup-admin', function () {
-    try {
-        $user = User::first(); // سيجلب أول مستخدم موجود
-        if ($user) {
-            $user->password = Hash::make('12345678'); // تشفير كلمة المرور الجديدة
-            $user->save();
-            return "تم تشفير كلمة المرور بنجاح! جرب الدخول الآن بـ: 12345678";
-        }
-        return "لا يوجد مستخدمين في قاعدة البيانات حالياً.";
-    } catch (\Exception $e) {
-        return "حدث خطأ: " . $e->getMessage();
-    }
-});
-
+// use Illuminate\Support\Facades\Hash;
 
 Route::get('/', function () {
     return redirect()->route('login');
