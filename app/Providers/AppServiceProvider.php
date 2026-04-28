@@ -21,8 +21,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-         if (config('app.env') === 'production') {
-        \URL::forceScheme('https');
+       // هذا هو الجزء الذي يحل مشكلة التنسيقات ويمنع خطأ 500
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
     }
-}
+    
+
