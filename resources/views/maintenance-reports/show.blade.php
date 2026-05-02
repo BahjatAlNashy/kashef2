@@ -62,40 +62,40 @@
            <div class="row mb-3">
     <div class="col-md-4">
         <label class="fw-bold">الجهة طالبة الصيانة:</label>
-        <div class="border p-2">{{ $maintenanceReport->requesting_party }}</div>
+        <div class="p-2">{{ $maintenanceReport->requesting_party }}</div>
     </div>
 </div>
 
 <div class="row mb-3">
     <div class="col-md-6">
         <label class="fw-bold">اسم الجهاز:</label>
-        <div class="border p-2">{{ $maintenanceReport->device_name }}</div>
+        <div class="p-2">{{ $maintenanceReport->device_name }}</div>
     </div>
     <div class="col-md-6">
         <label class="fw-bold">الماركة:</label>
-        <div class="border p-2">{{ $maintenanceReport->brand }}</div>
+        <div class="p-2">{{ $maintenanceReport->brand }}</div>
     </div>
 </div>
 
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="fw-bold">الاسم والكنية:</label>
-                    <div class="border p-2">{{ $maintenanceReport->reporter_name }}</div>
+                    <div class="p-2">{{ $maintenanceReport->reporter_name }}</div>
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold">التاريخ:</label>
-                    <div class="border p-2">{{ optional($maintenanceReport->report_date)->format('Y-m-d') }}</div>
+                    <div class="p-2">{{ optional($maintenanceReport->report_date)->format('Y-m-d') }}</div>
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold">الرقم التسلسلي:</label>
-                    <div class="border p-2">{{ $maintenanceReport->serial_number ?? '-' }}</div>
+                    <div class="p-2">{{ $maintenanceReport->serial_number ?? '-' }}</div>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="fw-bold">سبب العطل:</label>
-                    <div class="border p-2">{{ $maintenanceReport->failure_cause ?: '-' }}</div>
+                    <div class="p-2">{{ $maintenanceReport->failure_cause ?: '-' }}</div>
                 </div>
             </div>
 
@@ -108,24 +108,24 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="fw-bold">مكان تواجد الجهاز:</label>
-                    <div class="border p-2">{{ $maintenanceReport->device_location ?: '-' }}</div>
+                    <div class="p-2">{{ $maintenanceReport->device_location ?: '-' }}</div>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="fw-bold">المسؤول الفني:</label>
-                    <div class="border p-2">{{ $maintenanceReport->technical_manager }}</div>
+                    <div class="p-2">{{ $maintenanceReport->technical_manager }}</div>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
-                    <div class="border p-2">{{ $maintenanceReport->maintenance_head }}</div>
+                    <div class="p-2">{{ $maintenanceReport->maintenance_head }}</div>
                 </div>
                 <div class="col-md-6">
                     <label class="fw-bold">مدير المعلوماتية:</label>
-                    <div class="border p-2">{{ $maintenanceReport->it_manager }}</div>
+                    <div class="p-2">{{ $maintenanceReport->it_manager }}</div>
                 </div>
             </div>
 
