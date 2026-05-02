@@ -13,23 +13,18 @@ return new class extends Migration
     {
         Schema::create('maintenance_reports', function (Blueprint $table) {
             $table->id();
-            $table->string('requesting_party');        // 1-الجهة طالبة الصيانة
-            $table->string('reporter_name');           // 2-الاسم والكنية
-            $table->date('report_date');               // 3-تاريخ الإبلاغ
-            $table->string('device_name');             // 4-اسم الجهاز
-            $table->string('brand');                   // 5-الشركة (الماركة)
-            $table->string('serial_number');           // 6-الرقم التسلسلي
-            $table->text('initial_inspection')->nullable(); // 7-الكشف الفني الأولي
-            $table->enum('failure_cause', ['طبيعي', 'سوء استخدام', 'غير ذلك'])->nullable()->default(NULL); // 8
-            $table->string('request_party_sign_before'); // 9-اسم وتوقيع الجهة الطالبة (قبل)
-            $table->string('technician_sign_before');    // 10-اسم وتوقيع المسؤول الفني (قبل)
-            $table->enum('device_location', ['لدى صاحب العلاقة', 'في دائرة الصيانة', 'في الصيانة الخارجية (لجنة الشراء)'])->nullable(); // 11
-            $table->enum('maintenance_procedure', ['الاستلام من المستودع', 'في الصيانة الخارجية'])->nullable(); // 12
-            $table->text('post_maintenance_notes')->nullable(); // 13-الحالة الفنية بعد الصيانة والملاحظات
-            $table->string('request_party_sign_after')->nullable();  // 14
-            $table->string('technician_sign_after')->nullable();     // 15
-            $table->string('maintenance_head');                      // 16-ر.د الصيانة والدعم الفني
-            $table->string('it_manager');                            // 17-مدير المعلوماتية
+            $table->string('requesting_party');                    // 1-الجهة طالبة الصيانة (إجباري)
+            $table->string('reporter_name')->nullable();             // 2-الاسم والكنية
+            $table->date('report_date')->nullable();                 // 3-تاريخ الإبلاغ
+            $table->string('device_name')->nullable();               // 4-اسم الجهاز
+            $table->string('brand')->nullable();                     // 5-الشركة (الماركة)
+            $table->string('serial_number')->nullable();             // 6-الرقم التسلسلي
+            $table->text('initial_inspection')->nullable();          // 7-الكشف الفني الأولي
+            $table->enum('failure_cause', ['طبيعي', 'سوء استخدام', 'غير ذلك'])->nullable(); // 8-سبب العطل
+            $table->enum('device_location', ['لدى صاحب العلاقة', 'في دائرة الصيانة', 'في الصيانة الخارجية (لجنة الشراء)'])->nullable(); // 9-مكان الجهاز
+            $table->string('technical_manager')->nullable();         // 10-المسؤول الفني (جديد)
+            $table->string('maintenance_head')->nullable();          // 11-ر.د الصيانة والدعم الفني
+            $table->string('it_manager')->nullable();                // 12-مدير المعلوماتية
             $table->enum('status', ['قيد التنفيذ', 'تم الإنجاز', 'تم الإلغاء'])->default('قيد التنفيذ');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();   // من أنشأ الكشف
             $table->foreignId('status_changed_by')->nullable()->constrained('users')->nullOnDelete(); // من غيّر الحالة

@@ -19,7 +19,6 @@ Auth::routes(['register' => false]);
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/api/reports', [App\Http\Controllers\HomeController::class, 'getReportsJson'])->name('api.reports');
 
     // توجيه صفحات index المنفصلة إلى الصفحة الرئيسية
     Route::get('/warehouse-deliveries', function () {
@@ -44,5 +43,6 @@ Route::middleware('auth')->group(function () {
     // إدارة المستخدمين (مدير فقط)
     Route::middleware('role:manager')->group(function () {
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::patch('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
     });
 });

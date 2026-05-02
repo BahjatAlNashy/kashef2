@@ -3,6 +3,18 @@
 @section('content')
 <div class="container">
     <h2 class="text-center mb-4">إنشاء كشف فني جديد</h2>
+
+    <!-- عرض أخطاء التحقق -->
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('maintenance-reports.store') }}">
         @csrf
         <div class="card">
@@ -57,21 +69,6 @@
                     <textarea name="initial_inspection" class="form-control" rows="3"></textarea>
                 </div>
 
-                <!-- قبل الصيانة -->
-                <hr class="my-4">
-                <h5 class="fw-bold">قبل الصيانة</h5>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="fw-bold">اسم وتوقيع الجهة الطالبة:</label>
-                        <input type="text" name="request_party_sign_before" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold">اسم وتوقيع المسؤول الفني:</label>
-                        <input type="text" name="technician_sign_before" class="form-control" required>
-                    </div>
-                </div>
-
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="fw-bold">مكان تواجد الجهاز:</label>
@@ -82,41 +79,19 @@
                             <option value="في الصيانة الخارجية (لجنة الشراء)">في الصيانة الخارجية (لجنة الشراء)</option>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold">الإجراءات المتبعة:</label>
-                        <select name="maintenance_procedure" class="form-control">
-                            <option value="">-- اختر --</option>
-                            <option value="الاستلام من المستودع">الاستلام من المستودع</option>
-                            <option value="في الصيانة الخارجية">في الصيانة الخارجية</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- بعد الصيانة -->
-                <hr class="my-4">
-                <h5 class="fw-bold">بعد الصيانة</h5>
-
-                <div class="mb-3">
-                    <label class="fw-bold">الحالة الفنية بعد الصيانة والملاحظات:</label>
-                    <textarea name="post_maintenance_notes" class="form-control" rows="4"></textarea>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="fw-bold">اسم وتوقيع الجهة بعد الصيانة:</label>
-                        <input type="text" name="request_party_sign_after" class="form-control">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold">اسم وتوقيع المسؤول الفني بعد الصيانة:</label>
-                        <input type="text" name="technician_sign_after" class="form-control" required>
-                    </div>
                 </div>
 
                 <!-- الاعتمادات (صف المديرين) -->
                 <hr class="my-4">
                 <h5 class="fw-bold">الاعتمادات</h5>
 
-                <div class="row">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="fw-bold">المسؤول الفني:</label>
+                        <input type="text" name="technical_manager" class="form-control">
+                    </div>
+                </div>
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
                         <input type="text" name="maintenance_head" class="form-control">

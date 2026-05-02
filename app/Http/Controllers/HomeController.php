@@ -18,11 +18,9 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
+    // ============================================================
+    // عرض لوحة التحكم الرئيسية
+    // ============================================================
     public function index(Request $request)
     {
         $type = $request->get('type', 'all');
@@ -49,9 +47,9 @@ class HomeController extends Controller
         return view('home', compact('reports', 'deliveries', 'type'));
     }
 
-    /**
-     * جلب الكشوفات الفنية وتسليمات المستودع بصيغة JSON للتحديث الفوري
-     */
+    // ============================================================
+    // جلب الكشوفات والتسليمات بصيغة JSON (للتحديث الفوري)
+    // ============================================================
     public function getReportsJson(Request $request)
     {
         $queryReports = MaintenanceReport::with('creator');

@@ -3,6 +3,8 @@
 @section('content')
 <div class="container">
     <h2 class="mb-4">سجلات تسليم المستودع</h2>
+
+    <!-- شريط الإجراءات: زر إنشاء + حقل البحث -->
     <div class="row mb-3">
         <div class="col-md-6">
             <a href="{{ route('warehouse-deliveries.create') }}" class="btn btn-primary">إنشاء تسليم جديد</a>
@@ -11,9 +13,12 @@
             <input type="text" id="search-input" class="form-control" placeholder="بحث..." value="{{ request('search') }}">
         </div>
     </div>
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+
+    <!-- جدول تسليمات المستودع -->
     <table class="table table-bordered">
         <thead>
             <tr>

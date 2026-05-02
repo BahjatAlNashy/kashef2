@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    // ============================================================
+    // البحث في الكشوفات وتسليمات المستودع
+    // ============================================================
     public function index(Request $request)
     {
         $serial = $request->input('serial_number');

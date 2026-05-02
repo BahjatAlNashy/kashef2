@@ -3,11 +3,23 @@
 @section('content')
 <div class="container">
     <h2 class="mb-4">إضافة مستخدم جديد</h2>
+
+    <!-- عرض أخطاء التحقق -->
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('users.store') }}">
         @csrf
         <div class="card">
             <div class="card-body">
-                {{-- الاسم --}}
+                <!-- الاسم -->
                 <div class="row mb-3">
                     <label class="col-md-3 col-form-label fw-bold text-md-end">الاسم:</label>
                     <div class="col-md-9">
@@ -15,7 +27,7 @@
                     </div>
                 </div>
 
-                {{-- البريد الإلكتروني --}}
+                <!-- البريد الإلكتروني -->
                 <div class="row mb-3">
                     <label class="col-md-3 col-form-label fw-bold text-md-end">البريد الإلكتروني:</label>
                     <div class="col-md-9">
@@ -24,7 +36,7 @@
                     </div>
                 </div>
 
-                {{-- كلمة المرور --}}
+                <!-- كلمة المرور -->
                 <div class="row mb-3">
                     <label class="col-md-3 col-form-label fw-bold text-md-end">كلمة المرور:</label>
                     <div class="col-md-9">
@@ -36,7 +48,7 @@
                     </div>
                 </div>
 
-                {{-- تأكيد كلمة المرور --}}
+                <!-- تأكيد كلمة المرور -->
                 <div class="row mb-3">
                     <label class="col-md-3 col-form-label fw-bold text-md-end">تأكيد كلمة المرور:</label>
                     <div class="col-md-9">
@@ -47,7 +59,7 @@
                     </div>
                 </div>
 
-                {{-- الدور --}}
+                <!-- الدور -->
                 <div class="row mb-3">
                     <label class="col-md-3 col-form-label fw-bold text-md-end">الدور:</label>
                     <div class="col-md-9">

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class MaintenanceStatusController extends Controller
 {
+    // ============================================================
+    // تحديث حالة الكشف الفني (إنهاء أو إلغاء)
+    // ============================================================
     public function update(Request $request, MaintenanceReport $report)
     {
         $request->validate([

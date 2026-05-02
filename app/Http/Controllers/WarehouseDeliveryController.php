@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class WarehouseDeliveryController extends Controller
 {
+    // ============================================================
+    // عرض قائمة تسليمات المستودع
+    // ============================================================
     public function index(Request $request)
     {
         $search = $request->get('search');
@@ -24,19 +27,25 @@ class WarehouseDeliveryController extends Controller
         return view('warehouse-deliveries.index', compact('deliveries'));
     }
 
+    // ============================================================
+    // عرض نموذج إنشاء تسليم مستودع جديد
+    // ============================================================
     public function create()
     {
         return view('warehouse-deliveries.create');
     }
 
+    // ============================================================
+    // حفظ تسليم مستودع جديد
+    // ============================================================
     public function store(Request $request)
     {
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
             'device_type' => 'nullable|string|max:255',
-            'serial_number' => 'nullable|string|max:255|unique:warehouse_deliveries',
+            'serial_number' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'checked_by' => 'required|string|max:255',
+            'checked_by' => 'nullable|string|max:255',
             'date' => 'nullable|date',
             'maintenance_manager' => 'nullable|string|max:255',
             'it_manager' => 'nullable|string|max:255',
@@ -49,11 +58,17 @@ class WarehouseDeliveryController extends Controller
         return redirect()->route('home')->with('success', 'تم إضافة تسليم المستودع بنجاح');
     }
 
+    // ============================================================
+    // عرض تفاصيل تسليم المستودع
+    // ============================================================
     public function show(WarehouseDelivery $warehouseDelivery)
     {
         return view('warehouse-deliveries.show', compact('warehouseDelivery'));
     }
 
+    // ============================================================
+    // عرض نموذج تعديل تسليم المستودع
+    // ============================================================
     public function edit(WarehouseDelivery $warehouseDelivery)
     {
         if (auth()->user()->role === 'employee' && $warehouseDelivery->created_by !== auth()->id()) {
@@ -62,6 +77,9 @@ class WarehouseDeliveryController extends Controller
         return view('warehouse-deliveries.edit', compact('warehouseDelivery'));
     }
 
+    // ============================================================
+    // تحديث تسليم المستودع
+    // ============================================================
     public function update(Request $request, WarehouseDelivery $warehouseDelivery)
     {
         if (auth()->user()->role === 'employee' && $warehouseDelivery->created_by !== auth()->id()) {
@@ -70,7 +88,7 @@ class WarehouseDeliveryController extends Controller
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
             'device_type' => 'nullable|string|max:255',
-            'serial_number' => 'nullable|string|max:255|unique:warehouse_deliveries,serial_number,'.$warehouseDelivery->id,
+            'serial_number' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'checked_by' => 'required|string|max:255',
             'date' => 'nullable|date',
@@ -78,10 +96,14 @@ class WarehouseDeliveryController extends Controller
             'it_manager' => 'nullable|string|max:255',
         ]);
 
+        $validated['updated_by'] = auth()->id();
         $warehouseDelivery->update($validated);
         return redirect()->route('warehouse-deliveries.index')->with('success', 'تم التحديث');
     }
 
+    // ============================================================
+    // حذف تسليم المستودع
+    // ============================================================
     public function destroy(WarehouseDelivery $warehouseDelivery)
     {
         if (auth()->user()->role === 'employee' && $warehouseDelivery->created_by !== auth()->id()) {
