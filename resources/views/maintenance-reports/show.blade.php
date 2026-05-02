@@ -60,7 +60,7 @@
         <div class="card-body">
             <!-- بيانات أساسية -->
            <div class="row mb-3">
-    <div class="col-12">
+    <div class="col-md-4">
         <label class="fw-bold">الجهة طالبة الصيانة:</label>
         <div class="border p-2">{{ $maintenanceReport->requesting_party }}</div>
     </div>
