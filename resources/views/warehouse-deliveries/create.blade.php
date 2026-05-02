@@ -21,6 +21,12 @@
         <div class="card">
             <div class="card-body">
                 <!-- الصف الأول: بيانات الجهاز -->
+                 <div class="row mb-3">
+                     <div class="col-md-4">
+                        <label class="fw-bold">الجهة الطالبة:</label>
+                        <input type="text" name="requesting_party" class="form-control" required>
+                    </div>
+                 </div>  
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label class="fw-bold">نوع الجهاز:</label>
@@ -30,10 +36,7 @@
                         <label class="fw-bold">الرقم التسلسلي:</label>
                         <input type="text" name="serial_number" class="form-control">
                     </div>
-                    <div class="col-md-4">
-                        <label class="fw-bold">الجهة الطالبة:</label>
-                        <input type="text" name="requesting_party" class="form-control" required>
-                    </div>
+                   
                 </div>
 
                 <!-- الوصف -->

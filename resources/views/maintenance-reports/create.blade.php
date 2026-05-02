@@ -20,11 +20,14 @@
         <div class="card">
             <div class="card-body">
                 <!-- الصف الأول: 3 حقول -->
-                <div class="row mb-3">
-                    <div class="col-md-4">
+                 <div class="row mb-3">
+                     <div class="col-md-4">
                         <label class="fw-bold">الجهة طالبة الصيانة:</label>
                         <input type="text" name="requesting_party" class="form-control" required>
+                    </div>    
                     </div>
+                <div class="row mb-3">
+                  
                     <div class="col-md-4">
                         <label class="fw-bold">الاسم والكنية:</label>
                         <input type="text" name="reporter_name" class="form-control">
