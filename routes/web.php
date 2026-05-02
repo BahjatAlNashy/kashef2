@@ -9,7 +9,20 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 // use App\Models\User;
 
-
+Route::get('/hash-first-user', function () {
+    $password = '12345678'; // غيرها إلى كلمة المرور التي تريدها
+    $hashed = bcrypt($password);
+    
+    // تحديث المستخدم الذي بريده admin@admin.com
+    $user = \App\Models\User::where('email', 'admin@admin.com')->first();
+    if ($user) {
+        $user->password = $hashed;
+        $user->save();
+        return "تم تحديث كلمة مرور المستخدم admin@admin.com بنجاح. كلمة المرور الأصلية: {$password}";
+    } else {
+        return "لم يتم العثور على مستخدم بهذا البريد. قم بإنشائه أولاً.";
+    }
+});
 
 Route::get('/', function () {
     return redirect()->route('login');
