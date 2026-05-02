@@ -64,11 +64,11 @@
                     <label class="fw-bold">الجهة طالبة الصيانة:</label>
                     <div class="border p-2">{{ $maintenanceReport->requesting_party }}</div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="fw-bold">اسم الجهاز:</label>
                     <div class="border p-2">{{ $maintenanceReport->device_name }}</div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="fw-bold">الماركة:</label>
                     <div class="border p-2">{{ $maintenanceReport->brand }}</div>
                 </div>
