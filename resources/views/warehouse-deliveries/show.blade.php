@@ -44,19 +44,22 @@
 
         <div class="card-body">
             <!-- بيانات الجهاز -->
+             <div class="row mb-3">
+    <div class="col-md-4">
+        <label class="fw-bold">الجهة طالبة الصيانة:</label>
+        <div class="p-2">{{ $maintenanceReport->requesting_party }}</div>
+    </div>
+</div>
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="fw-bold">نوع الجهاز:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->device_type }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->device_type }}</div>
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold">الرقم التسلسلي:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->serial_number ?? '-' }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->serial_number ?? '-' }}</div>
                 </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">الجهة الطالبة:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->requesting_party }}</div>
-                </div>
+               
             </div>
 
             <!-- الوصف (مطابق لـ textarea في الإنشاء) -->
@@ -69,11 +72,11 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="fw-bold">التاريخ:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->date }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->date }}</div>
                 </div>
                 <div class="col-md-6">
                     <label class="fw-bold">تم الفحص من قبل:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->checked_by }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->checked_by }}</div>
                 </div>
             </div>
 
@@ -81,11 +84,11 @@
             <div class="row">
                 <div class="col-md-6">
                     <label class="fw-bold">مدير الصيانة والدعم الفني:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->maintenance_manager }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->maintenance_manager }}</div>
                 </div>
                 <div class="col-md-6">
                     <label class="fw-bold">مدير المعلوماتية:</label>
-                    <div class="border p-2 bg-light">{{ $warehouseDelivery->it_manager }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->it_manager }}</div>
                 </div>
             </div>
 
