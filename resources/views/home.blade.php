@@ -262,8 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function startAutoRefresh() {
     if (!isAutoRefreshEnabled) return;
 
-    // التحقق من وجود تغييرات كل 5 ثوانٍ
-    autoRefreshInterval = setInterval(checkForUpdates, 5000);
+    // التحقق من وجود تحديثات كل 5 دقائق
+    autoRefreshInterval = setInterval(checkForUpdates, 300000);
 }
 
 function stopAutoRefresh() {
