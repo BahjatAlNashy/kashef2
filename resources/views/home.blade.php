@@ -263,7 +263,7 @@ function startAutoRefresh() {
     if (!isAutoRefreshEnabled) return;
 
     // التحقق من وجود تحديثات كل 5 دقائق
-    autoRefreshInterval = setInterval(checkForUpdates, 300000);
+    autoRefreshInterval = setInterval(checkForUpdates, 5000);
 }
 
 function stopAutoRefresh() {
