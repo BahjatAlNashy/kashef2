@@ -20,8 +20,8 @@
 
                                 <!-- فلاتر الحالة -->
                                 <button id="btn-all" onclick="filterByStatus('all')" class="btn btn-info active-filter">الكل</button>
-                                <button id="btn-pending" onclick="filterByStatus('قيد التنفيذ')" class="btn btn-warning text-dark">قيد التنفيذ ({{ $reports->where('status', 'قيد التنفيذ')->count() }})</button>
-                                <button id="btn-completed" onclick="filterByStatus('completed')" class="btn btn-success">تم الإنجاز والإلغاء ({{ $reports->whereIn('status', ['تم الإنجاز', 'تم الإلغاء'])->count() }})</button>
+                                 <button id="btn-pending" onclick="filterByStatus('قيد التنفيذ')" class="btn btn-warning text-dark">قيد التنفيذ (<span id="pending-count">{{ $reports->where('status', 'قيد التنفيذ')->count() }}</span>)</button>
+                                <button id="btn-completed" onclick="filterByStatus('completed')" class="btn btn-success">تم الإنجاز والإلغاء (<span id="completed-count">{{ $reports->whereIn('status', ['تم الإنجاز', 'تم الإلغاء'])->count() }}</span>)</button>
                             @endif
 
                             <!-- أزرار إنشاء جديد -->
@@ -29,6 +29,14 @@
                             <a href="{{ route('warehouse-deliveries.create') }}" class="btn btn-primary">+ تسليم مستودع</a>
                         </div>
                     </div>
+                </div>
+
+                <!-- مؤشر حالة التحديث التلقائي -->
+                <div class="d-flex align-items-center gap-2" style="font-size: 12px; color: #666;">
+                    <span id="auto-refresh-status">
+                        <i class="fas fa-sync fa-spin text-success"></i> تحديث تلقائي: نشط
+                    </span>
+                    <span id="last-refresh-time">-</span>
                 </div>
 
                 <div class="card-body">
@@ -164,6 +172,12 @@
 let currentStatusFilter = 'all';
 let searchTimeout = null;
 
+// متغيرات للتحديث التلقائي
+let lastReportsData = null;
+let lastDeliveriesData = null;
+let autoRefreshInterval = null;
+let isAutoRefreshEnabled = true;
+
 function filterByStatus(status) {
     currentStatusFilter = status;
 
@@ -238,7 +252,341 @@ document.getElementById('search-input').addEventListener('input', function(e) {
 // تطبيق الفلاتر عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     applyFilters();
+    startAutoRefresh();
 });
+
+// ============================================================
+// دوال التحديث التلقائي
+// ============================================================
+
+function startAutoRefresh() {
+    if (!isAutoRefreshEnabled) return;
+
+    // التحقق من وجود تغييرات كل 5 ثوانٍ
+    autoRefreshInterval = setInterval(checkForUpdates, 5000);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+        isAutoRefreshEnabled = false;
+        updateRefreshStatus('stopped', 'تم الإيقاف');
+        console.log('[AutoRefresh] Auto refresh stopped');
+    }
+}
+
+async function checkForUpdates() {
+    if (!isAutoRefreshEnabled) return;
+
+    // تحديث حالة التحميل
+    updateRefreshStatus('loading');
+
+    try {
+        console.log('[AutoRefresh] Fetching data from server...');
+
+        const response = await fetch('{{ route('api.reports') }}', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            },
+            cache: 'no-store'
+        });
+
+        // التحقق من حالة الـ response
+        if (!response.ok) {
+            console.error('[AutoRefresh] HTTP Error:', response.status, response.statusText);
+            updateRefreshStatus('error', 'خطأ: ' + response.status);
+            if (response.status === 401) {
+                console.warn('[AutoRefresh] Session expired, stopping auto-refresh');
+                stopAutoRefresh();
+                updateRefreshStatus('stopped', 'الجلسة منتهية');
+            }
+            return;
+        }
+
+        const data = await response.json();
+        console.log('[AutoRefresh] Data received, reports:', data.reports?.length, 'deliveries:', data.deliveries?.length);
+
+        // التحقق من وجود البيانات
+        if (!data.reports || !data.deliveries) {
+            console.error('[AutoRefresh] Invalid data structure');
+            updateRefreshStatus('error', 'بيانات غير صالحة');
+            return;
+        }
+
+        // تحديث وقت آخر تحديث
+        updateLastRefreshTime();
+        updateRefreshStatus('active');
+
+        // مقارنة الكشوفات الفنية
+        const reportsChanged = hasReportsChanged(data.reports);
+        const deliveriesChanged = hasDeliveriesChanged(data.deliveries);
+
+        if (reportsChanged || deliveriesChanged) {
+            console.log('[AutoRefresh] Changes detected, updating table...');
+
+            // تحديث البيانات المحفوظة
+            lastReportsData = data.reports;
+            lastDeliveriesData = data.deliveries;
+
+            // تحديث الجدول
+            updateTable(data.reports, data.deliveries);
+
+            // إظهار إشعار بسيط
+            showRefreshNotification();
+        } else {
+            console.log('[AutoRefresh] No changes detected');
+        }
+    } catch (error) {
+        console.error('[AutoRefresh] Error:', error.message);
+        updateRefreshStatus('error', 'خطأ في الاتصال');
+
+        // إذا كانت المشكلة متعلقة بالشبكة، نوقف التحديث مؤقتاً
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            console.warn('[AutoRefresh] Network error, will retry next cycle');
+        }
+    }
+}
+
+// تحديث حالة المؤشر
+function updateRefreshStatus(status, message = '') {
+    const statusEl = document.getElementById('auto-refresh-status');
+    if (!statusEl) return;
+
+    switch(status) {
+        case 'loading':
+            statusEl.innerHTML = '<i class="fas fa-sync fa-spin text-info"></i> جاري التحديث...';
+            break;
+        case 'active':
+            statusEl.innerHTML = '<i class="fas fa-sync fa-spin text-success"></i> تحديث تلقائي: نشط';
+            break;
+        case 'error':
+            statusEl.innerHTML = '<i class="fas fa-exclamation-circle text-danger"></i> ' + (message || 'خطأ في التحديث');
+            break;
+        case 'stopped':
+            statusEl.innerHTML = '<i class="fas fa-pause-circle text-warning"></i> ' + (message || 'متوقف');
+            break;
+    }
+}
+
+// تحديث وقت آخر تحديث
+function updateLastRefreshTime() {
+    const timeEl = document.getElementById('last-refresh-time');
+    if (!timeEl) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    timeEl.textContent = '(آخر تحديث: ' + timeStr + ')';
+}
+
+function hasReportsChanged(newReports) {
+    if (!lastReportsData) {
+        lastReportsData = newReports;
+        return false;
+    }
+
+    if (lastReportsData.length !== newReports.length) {
+        return true;
+    }
+
+    // التحقق من وجود تغييرات في الحالة أو البيانات
+    for (let i = 0; i < newReports.length; i++) {
+        const oldReport = lastReportsData[i];
+        const newReport = newReports[i];
+
+        if (!oldReport || oldReport.id !== newReport.id ||
+            oldReport.status !== newReport.status ||
+            oldReport.requesting_party !== newReport.requesting_party ||
+            oldReport.device_name !== newReport.device_name) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function hasDeliveriesChanged(newDeliveries) {
+    if (!lastDeliveriesData) {
+        lastDeliveriesData = newDeliveries;
+        return false;
+    }
+
+    if (lastDeliveriesData.length !== newDeliveries.length) {
+        return true;
+    }
+
+    for (let i = 0; i < newDeliveries.length; i++) {
+        const oldDelivery = lastDeliveriesData[i];
+        const newDelivery = newDeliveries[i];
+
+        if (!oldDelivery || oldDelivery.id !== newDelivery.id ||
+            oldDelivery.requesting_party !== newDelivery.requesting_party ||
+            oldDelivery.device_type !== newDelivery.device_type) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function updateTable(reports, deliveries) {
+    const tbody = document.querySelector('#reports-table tbody');
+    if (!tbody) return;
+
+    let html = '';
+
+    // إضافة الكشوفات الفنية
+    reports.forEach((report, index) => {
+        const statusBadge = getStatusBadge(report.status);
+        const actions = getReportActions(report);
+
+        html += `
+            <tr class="report-row" data-type="maintenance" data-status="${report.status}" data-search="${(report.requesting_party + ' ' + report.device_name + ' ' + (report.serial_number || '') + ' ' + report.brand).toLowerCase()}">
+                <td class="row-number">${index + 1}</td>
+                <td><span class="badge bg-success">كشف فني</span></td>
+                <td>${report.requesting_party}</td>
+                <td>${report.device_name}</td>
+                <td>${report.serial_number || '-'}</td>
+                <td>${new Date(report.created_at).toISOString().split('T')[0]}</td>
+                <td>${statusBadge}</td>
+                <td>${actions}</td>
+            </tr>
+        `;
+    });
+
+    // إضافة تسليمات المستودع
+    const deliveryStartNumber = reports.length;
+    deliveries.forEach((delivery, index) => {
+        const actions = getDeliveryActions(delivery);
+
+        html += `
+            <tr class="report-row" data-type="warehouse" data-status="none" data-search="${(delivery.requesting_party + ' ' + delivery.device_type + ' ' + (delivery.serial_number || '')).toLowerCase()}">
+                <td class="row-number">${deliveryStartNumber + index + 1}</td>
+                <td><span class="badge bg-primary">تسليم مستودع</span></td>
+                <td>${delivery.requesting_party}</td>
+                <td>${delivery.device_type}</td>
+                <td>${delivery.serial_number || '-'}</td>
+                <td>${new Date(delivery.created_at).toISOString().split('T')[0]}</td>
+                <td>-</td>
+                <td>${actions}</td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+
+    // تحديث العدادات
+    updateCounters(reports);
+
+    // إعادة تطبيق الفلاتر
+    applyFilters();
+}
+
+function updateCounters(reports) {
+    const pendingCount = reports.filter(r => r.status === 'قيد التنفيذ').length;
+    const completedCount = reports.filter(r => r.status === 'تم الإنجاز' || r.status === 'تم الإلغاء').length;
+
+    const pendingCountEl = document.getElementById('pending-count');
+    const completedCountEl = document.getElementById('completed-count');
+
+    if (pendingCountEl) {
+        pendingCountEl.textContent = pendingCount;
+    }
+    if (completedCountEl) {
+        completedCountEl.textContent = completedCount;
+    }
+}
+
+function getStatusBadge(status) {
+    if (status === 'قيد التنفيذ') {
+        return '<span class="badge bg-warning">قيد التنفيذ</span>';
+    } else if (status === 'تم الإنجاز') {
+        return '<span class="badge bg-success">تم الإنجاز</span>';
+    } else {
+        return '<span class="badge bg-danger">تم الإلغاء</span>';
+    }
+}
+
+function getReportActions(report) {
+    const isManager = '{{ auth()->user()->role }}' === 'manager';
+    const isOwner = report.created_by === '{{ auth()->id() }}';
+
+    let actions = `<a href="/maintenance-reports/${report.id}" class="btn btn-sm btn-info">عرض</a>`;
+
+    if (isManager || isOwner) {
+        actions += `<a href="/maintenance-reports/${report.id}/edit" class="btn btn-sm btn-warning">تعديل</a>`;
+    }
+
+    if (isManager && report.status === 'قيد التنفيذ') {
+        actions += `
+            <form action="/maintenance-reports/${report.id}/status" method="POST" style="display:inline">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="PATCH">
+                <input type="hidden" name="status" value="تم الإنجاز">
+                <button class="btn btn-sm btn-success">إنهاء</button>
+            </form>
+            <form action="/maintenance-reports/${report.id}/status" method="POST" style="display:inline">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="PATCH">
+                <input type="hidden" name="status" value="تم الإلغاء">
+                <button class="btn btn-sm btn-danger">إلغاء</button>
+            </form>
+        `;
+    }
+
+    if (isManager || isOwner) {
+        actions += `
+            <form action="/maintenance-reports/${report.id}" method="POST" style="display:inline">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
+            </form>
+        `;
+    }
+
+    return actions;
+}
+
+function getDeliveryActions(delivery) {
+    const isManager = '{{ auth()->user()->role }}' === 'manager';
+    const isOwner = delivery.created_by === '{{ auth()->id() }}';
+
+    let actions = `<a href="/warehouse-deliveries/${delivery.id}" class="btn btn-sm btn-info">عرض</a>`;
+
+    if (isManager || isOwner) {
+        actions += `<a href="/warehouse-deliveries/${delivery.id}/edit" class="btn btn-sm btn-warning">تعديل</a>`;
+    }
+
+    if (isManager || isOwner) {
+        actions += `
+            <form action="/warehouse-deliveries/${delivery.id}" method="POST" style="display:inline">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
+            </form>
+        `;
+    }
+
+    return actions;
+}
+
+function showRefreshNotification() {
+    // إظهار إشعار بسيط
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-info position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; animation: fadeInOut 3s forwards;';
+    notification.innerHTML = '<i class="fas fa-sync"></i> تم تحديث البيانات تلقائياً';
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
 </script>
 
 <style>
@@ -263,6 +611,14 @@ document.addEventListener('DOMContentLoaded', function() {
 #btn-completed.active-filter {
     background-color: #1e7e34 !important;
     border-color: #000 !important;
+}
+
+/* animation للإشعار */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
 }
 </style>
 @endsection

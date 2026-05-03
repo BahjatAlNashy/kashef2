@@ -75,6 +75,11 @@ class HomeController extends Controller
             'reports' => $reports,
             'deliveries' => $deliveries,
             'timestamp' => now()->timestamp
+        ])->withHeaders([
+            'Cache-Control' => 'no-cache, no-store, must-revalidate, private',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 }

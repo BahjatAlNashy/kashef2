@@ -17,6 +17,7 @@ Auth::routes(['register' => false]);
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/api/reports', [App\Http\Controllers\HomeController::class, 'getReportsJson'])->name('api.reports');
 
     // توجيه صفحات index المنفصلة إلى الصفحة الرئيسية
     Route::get('/warehouse-deliveries', function () {
