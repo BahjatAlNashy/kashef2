@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('requesting_party');      // الجهة الطالبة (إجباري)
             $table->string('device_type')->nullable();      // نوع الجهاز
+            $table->string('brand')->nullable();              // الماركة
             $table->string('serial_number')->nullable();    // الرقم التسلسلي
+            $table->string('device_status')->nullable();      // حالة الجهاز
             $table->text('description')->nullable();          // الوصف
             $table->string('checked_by')->nullable();        // تم الفحص من قبل
             $table->date('date')->nullable();                 // التاريخ

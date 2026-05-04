@@ -43,7 +43,9 @@ class WarehouseDeliveryController extends Controller
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
             'device_type' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255',
+            'device_status' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'checked_by' => 'nullable|string|max:255',
             'date' => 'nullable|date',
@@ -88,7 +90,9 @@ class WarehouseDeliveryController extends Controller
         $validated = $request->validate([
             'requesting_party' => 'required|string|max:255',
             'device_type' => 'nullable|string|max:255',
+            'brand' => 'nullable|string|max:255',
             'serial_number' => 'nullable|string|max:255',
+            'device_status' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'checked_by' => 'required|string|max:255',
             'date' => 'nullable|date',

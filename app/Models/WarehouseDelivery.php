@@ -14,7 +14,9 @@ class WarehouseDelivery extends Model
      protected $fillable = [
         'requesting_party',
         'device_type',
+        'brand',
         'serial_number',
+        'device_status',
         'description',
         'checked_by',
         'date',

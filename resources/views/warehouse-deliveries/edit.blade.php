@@ -22,15 +22,19 @@
             <div class="card-body">
                 <!-- الصف الأول: بيانات الجهاز -->
                 <div class="row mb-3">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="fw-bold">نوع الجهاز:</label>
                         <input type="text" name="device_type" value="{{ $warehouseDelivery->device_type }}" class="form-control">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <label class="fw-bold">الماركة:</label>
+                        <input type="text" name="brand" value="{{ $warehouseDelivery->brand }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
                         <label class="fw-bold">الرقم التسلسلي:</label>
                         <input type="text" name="serial_number" value="{{ $warehouseDelivery->serial_number }}" class="form-control">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="fw-bold">الجهة الطالبة:</label>
                         <input type="text" name="requesting_party" value="{{ $warehouseDelivery->requesting_party }}" class="form-control" required>
                     </div>
@@ -40,6 +44,12 @@
                 <div class="mb-3">
                     <label class="fw-bold">الوصف:</label>
                     <textarea name="description" class="form-control" rows="3">{{ $warehouseDelivery->description }}</textarea>
+                </div>
+
+                <!-- حالة الجهاز -->
+                <div class="mb-3">
+                    <label class="fw-bold">حالة الجهاز:</label>
+                    <input type="text" name="device_status" value="{{ $warehouseDelivery->device_status }}" class="form-control">
                 </div>
 
                 <!-- الصف الثاني: التاريخ والفحص -->

@@ -24,6 +24,7 @@
             <tr>
                 <th>الجهة الطالبة</th>
                 <th>نوع الجهاز</th>
+                <th>الماركة</th>
                 <th>الرقم التسلسلي</th>
                 <th>التاريخ</th>
                 <th>إجراءات</th>
@@ -34,6 +35,7 @@
             <tr>
                 <td>{{ $delivery->requesting_party }}</td>
                 <td>{{ $delivery->device_type }}</td>
+                <td>{{ $delivery->brand ?? '-' }}</td>
                 <td>{{ $delivery->serial_number }}</td>
                 <td>{{ optional($delivery->created_at)->format('Y-m-d') }}</td>
                 <td>

@@ -53,19 +53,28 @@
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="fw-bold">نوع الجهاز:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->device_type }}</div>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->device_type ?? '-' }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="fw-bold">الماركة:</label>
+                    <div class="p-2 bg-light">{{ $warehouseDelivery->brand ?? '-' }}</div>
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold">الرقم التسلسلي:</label>
                     <div class="p-2 bg-light">{{ $warehouseDelivery->serial_number ?? '-' }}</div>
                 </div>
-               
             </div>
 
             <!-- الوصف (مطابق لـ textarea في الإنشاء) -->
             <div class="mb-3">
                 <label class="fw-bold">الوصف:</label>
                 <div class="form-control-static" style="min-height: calc(1.5em * 3 + 0.75rem * 2); padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.375rem;">{{ $warehouseDelivery->description }}</div>
+            </div>
+
+            <!-- حالة الجهاز -->
+            <div class="mb-3">
+                <label class="fw-bold">حالة الجهاز:</label>
+                <div class="p-2 bg-light">{{ $warehouseDelivery->device_status ?? '-' }}</div>
             </div>
 
             <!-- التاريخ والفحص -->

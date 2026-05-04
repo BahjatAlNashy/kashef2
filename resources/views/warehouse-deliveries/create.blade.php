@@ -33,16 +33,25 @@
                         <input type="text" name="device_type" class="form-control">
                     </div>
                     <div class="col-md-4">
+                        <label class="fw-bold">الماركة:</label>
+                        <input type="text" name="brand" class="form-control">
+                    </div>
+                    <div class="col-md-4">
                         <label class="fw-bold">الرقم التسلسلي:</label>
                         <input type="text" name="serial_number" class="form-control">
                     </div>
-                   
                 </div>
 
                 <!-- الوصف -->
                 <div class="mb-3">
                     <label class="fw-bold">الوصف:</label>
                     <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <!-- حالة الجهاز -->
+                <div class="mb-3">
+                    <label class="fw-bold">حالة الجهاز:</label>
+                    <input type="text" name="device_status" class="form-control">
                 </div>
 
                 <!-- الصف الثاني: التاريخ والفحص -->
