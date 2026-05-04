@@ -112,18 +112,19 @@
                 </div>
             </div>
 
+            <!-- <div class="row mb-3">
+                
+            </div> -->
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="fw-bold">المسؤول الفني:</label>
                     <div class="p-2">{{ $maintenanceReport->technical_manager }}</div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
                     <div class="p-2">{{ $maintenanceReport->maintenance_head }}</div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="fw-bold">مدير المعلوماتية:</label>
                     <div class="p-2">{{ $maintenanceReport->it_manager }}</div>
                 </div>
