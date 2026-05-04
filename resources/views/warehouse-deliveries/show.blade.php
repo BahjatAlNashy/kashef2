@@ -47,7 +47,7 @@
              <div class="row mb-3">
     <div class="col-md-4">
         <label class="fw-bold">الجهة طالبة الصيانة:</label>
-        <div class="p-2">{{ $maintenanceReport->requesting_party }}</div>
+        <div class="p-2">{{ $warehouseDelivery->requesting_party }}</div>
     </div>
 </div>
             <div class="row mb-3">
