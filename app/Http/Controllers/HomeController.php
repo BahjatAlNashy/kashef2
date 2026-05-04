@@ -24,6 +24,7 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $type = $request->get('type', 'all');
+        $search = $request->get('search');
 
         $queryReports = MaintenanceReport::with('creator');
         $queryDeliveries = WarehouseDelivery::query();
@@ -34,13 +35,29 @@ class HomeController extends Controller
             $queryDeliveries->where('created_by', auth()->id());
         }
 
+        // البحث في جميع البيانات
+        if ($search) {
+            $queryReports->where(function($q) use ($search) {
+                $q->where('requesting_party', 'like', "%{$search}%")
+                  ->orWhere('device_name', 'like', "%{$search}%")
+                  ->orWhere('serial_number', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%");
+            });
+            $queryDeliveries->where(function($q) use ($search) {
+                $q->where('requesting_party', 'like', "%{$search}%")
+                  ->orWhere('device_type', 'like', "%{$search}%")
+                  ->orWhere('serial_number', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%");
+            });
+        }
+
         // فلترة حسب النوع إذا تم تحديده
         if ($type === 'maintenance') {
             $reports = $queryReports->orderByDesc('updated_at')->paginate(10);
-            return view('home', compact('reports', 'type'));
+            return view('home', compact('reports', 'type', 'search'));
         } elseif ($type === 'warehouse') {
             $deliveries = $queryDeliveries->orderByDesc('updated_at')->paginate(10);
-            return view('home', compact('deliveries', 'type'));
+            return view('home', compact('deliveries', 'type', 'search'));
         }
 
         // جلب جميع البيانات ودمجها
@@ -78,7 +95,7 @@ class HomeController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        return view('home', compact('paginatedItems', 'type'));
+        return view('home', compact('paginatedItems', 'type', 'search'));
     }
 
     // ============================================================

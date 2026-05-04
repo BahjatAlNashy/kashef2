@@ -50,12 +50,12 @@
                                 @endif
                             </h5>
                             <div class="d-flex gap-2 flex-wrap">
-                                <select id="filter-type" class="form-control" style="width: 200px;" onchange="window.location.href='{{ route('home') }}?type='+this.value">
+                                <select id="filter-type" class="form-control" style="width: 200px;" onchange="window.location.href='{{ route('home') }}?type='+this.value+'&search='+encodeURIComponent('{{ $search ?? '' }}')">
                                     <option value="all" {{ $type == 'all' ? 'selected' : '' }}>الكل</option>
                                     <option value="maintenance" {{ $type == 'maintenance' ? 'selected' : '' }}>الكشوفات الفنية</option>
                                     <option value="warehouse" {{ $type == 'warehouse' ? 'selected' : '' }}>تسليم المستودع</option>
                                 </select>
-                                <input type="text" id="search-input" class="form-control" style="width: 250px;" placeholder="بحث...">
+                                <input type="text" id="search-input" class="form-control" style="width: 250px;" placeholder="بحث..." value="{{ $search ?? '' }}">
                             </div>
                         </div>
                         <div class="card-body">
@@ -330,7 +330,11 @@ function renumberRows() {
 
 document.getElementById('search-input').addEventListener('input', function(e) {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(applyFilters, 300);
+    searchTimeout = setTimeout(function() {
+        const searchTerm = e.target.value;
+        const type = document.getElementById('filter-type').value;
+        window.location.href = '{{ route('home') }}?type=' + type + '&search=' + encodeURIComponent(searchTerm);
+    }, 500);
 });
 
 // تطبيق الفلاتر عند تحميل الصفحة
