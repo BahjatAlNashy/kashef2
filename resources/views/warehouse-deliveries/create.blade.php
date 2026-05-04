@@ -58,7 +58,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="fw-bold">التاريخ:</label>
-                        <input type="date" name="date" class="form-control">
+                        <input type="date" name="date" class="form-control" value="{{ date('Y-m-d') }}">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">تم الفحص من قبل:</label>
@@ -70,11 +70,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="fw-bold">مدير الصيانة والدعم الفني:</label>
-                        <input type="text" name="maintenance_manager" class="form-control">
+                        <input type="text" name="maintenance_manager" class="form-control" value="م . نهى الأحمد">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">مدير المعلوماتية:</label>
-                        <input type="text" name="it_manager" class="form-control">
+                        <input type="text" name="it_manager" class="form-control" value="أ . حسام بربور">
                     </div>
                 </div>
             </div>

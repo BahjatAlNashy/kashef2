@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -17,11 +17,6 @@
                                         <span class="badge bg-light text-dark ms-1">{{ \App\Models\User::count() }}</span>
                                     </a>
                                 </div>
-
-                                <!-- فلاتر الحالة -->
-                                <button id="btn-all" onclick="filterByStatus('all')" class="btn btn-info active-filter">الكل</button>
-                                 <button id="btn-pending" onclick="filterByStatus('قيد التنفيذ')" class="btn btn-warning text-dark">قيد التنفيذ (<span id="pending-count">{{ $reports->where('status', 'قيد التنفيذ')->count() }}</span>)</button>
-                                <button id="btn-completed" onclick="filterByStatus('completed')" class="btn btn-success">تم الإنجاز والإلغاء (<span id="completed-count">{{ $reports->whereIn('status', ['تم الإنجاز', 'تم الإلغاء'])->count() }}</span>)</button>
                             @endif
 
                             <!-- أزرار إنشاء جديد -->
@@ -38,12 +33,24 @@
                         </div>
                     @endif
 
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
                     <!-- جدول جميع الكشوف -->
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>جميع الكشوف <span class="badge bg-secondary">{{ $reports->count() + $deliveries->count() }}</span></h5>
-                            <div class="d-flex gap-2">
-                                <select id="filter-type" class="form-control" style="width: 200px;" onchange="filterReports()">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <h5>جميع الكشوف
+                                @if(isset($paginatedItems))
+                                    <span class="badge bg-secondary">{{ $paginatedItems->total() }}</span>
+                                @elseif(isset($reports))
+                                    <span class="badge bg-secondary">{{ $reports->total() }}</span>
+                                @elseif(isset($deliveries))
+                                    <span class="badge bg-secondary">{{ $deliveries->total() }}</span>
+                                @endif
+                            </h5>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <select id="filter-type" class="form-control" style="width: 200px;" onchange="window.location.href='{{ route('home') }}?type='+this.value">
                                     <option value="all" {{ $type == 'all' ? 'selected' : '' }}>الكل</option>
                                     <option value="maintenance" {{ $type == 'maintenance' ? 'selected' : '' }}>الكشوفات الفنية</option>
                                     <option value="warehouse" {{ $type == 'warehouse' ? 'selected' : '' }}>تسليم المستودع</option>
@@ -61,95 +68,181 @@
                                             <th>الجهة</th>
                                             <th>الجهاز/النوع</th>
                                             <th>الرقم التسلسلي</th>
-                                            <th>التاريخ</th>
+                                            <th>تاريخ الإنشاء</th>
+                                            <th>تاريخ التعديل</th>
                                             <th>الحالة</th>
                                             <th>إجراءات</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($reports as $report)
-                                        <tr class="report-row" data-type="maintenance" data-status="{{ $report->status }}" data-search="{{ strtolower($report->requesting_party . ' ' . $report->device_name . ' ' . ($report->serial_number ?? '') . ' ' . $report->brand) }}">
-                                            <td class="row-number">{{ $loop->iteration }}</td>
-                                            <td><span class="badge bg-success">كشف فني</span></td>
-                                            <td>{{ $report->requesting_party }}</td>
-                                            <td>{{ $report->device_name }}</td>
-                                            <td>{{ $report->serial_number ?? '-' }}</td>
-                                            <td>{{ optional($report->created_at)->format('Y-m-d') }}</td>
-                                            <!-- حالة الكشف -->
-                                            <td>
-                                                @if($report->status == 'قيد التنفيذ')
-                                                    <span class="badge bg-warning">قيد التنفيذ</span>
-                                                @elseif($report->status == 'تم الإنجاز')
-                                                    <span class="badge bg-success">تم الإنجاز</span>
+                                        {{-- عرض العناصر المدمجة (الكل) --}}
+                                        @if(isset($paginatedItems))
+                                            @foreach($paginatedItems as $item)
+                                                @php $data = $item['data']; @endphp
+                                                @if($item['type'] === 'maintenance')
+                                                    {{-- صف كشف فني --}}
+                                                    <tr class="report-row" data-type="maintenance" data-status="{{ $data->status }}" data-search="{{ strtolower($data->requesting_party . ' ' . $data->device_name . ' ' . ($data->serial_number ?? '') . ' ' . $data->brand) }}">
+                                                        <td class="row-number">{{ ($paginatedItems->currentPage() - 1) * $paginatedItems->perPage() + $loop->iteration }}</td>
+                                                        <td><span class="badge bg-success">كشف فني</span></td>
+                                                        <td>{{ $data->requesting_party }}</td>
+                                                        <td>{{ $data->device_name }}</td>
+                                                        <td>{{ $data->serial_number ?? '-' }}</td>
+                                                        <td>{{ optional($data->created_at)->format('Y-m-d H:i') }}</td>
+                                                        <td>{{ optional($data->updated_at)->format('Y-m-d H:i') }}</td>
+                                                        <td>
+                                                            @if($data->status == 'قيد التنفيذ')
+                                                                <span class="badge bg-warning">قيد التنفيذ</span>
+                                                            @elseif($data->status == 'تم الإنجاز')
+                                                                <span class="badge bg-success">تم الإنجاز</span>
+                                                            @else
+                                                                <span class="badge bg-danger">تم الإلغاء</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a href="{{ route('maintenance-reports.show', $data) }}" class="btn btn-sm btn-info">عرض</a>
+                                                            @if(auth()->user()->role == 'manager' || $data->created_by == auth()->id())
+                                                                <a href="{{ route('maintenance-reports.edit', $data) }}" class="btn btn-sm btn-warning">تعديل</a>
+                                                            @endif
+                                                            @if(auth()->user()->role == 'manager')
+                                                                @if($data->status == 'قيد التنفيذ')
+                                                                    <form action="{{ route('maintenance.status.update', $data) }}" method="POST" style="display:inline">
+                                                                        @csrf @method('PATCH')
+                                                                        <input type="hidden" name="status" value="تم الإنجاز">
+                                                                        <button class="btn btn-sm btn-success">إنهاء</button>
+                                                                    </form>
+                                                                    <form action="{{ route('maintenance.status.update', $data) }}" method="POST" style="display:inline">
+                                                                        @csrf @method('PATCH')
+                                                                        <input type="hidden" name="status" value="تم الإلغاء">
+                                                                        <button class="btn btn-sm btn-danger">إلغاء</button>
+                                                                    </form>
+                                                                @endif
+                                                            @endif
+                                                            @if(auth()->user()->role == 'manager' || $data->created_by == auth()->id())
+                                                                <form action="{{ route('maintenance-reports.destroy', $data) }}" method="POST" style="display:inline">
+                                                                    @csrf @method('DELETE')
+                                                                    <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
+                                                                </form>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
                                                 @else
-                                                    <span class="badge bg-danger">تم الإلغاء</span>
+                                                    {{-- صف تسليم مستودع --}}
+                                                    <tr class="report-row" data-type="warehouse" data-status="none" data-search="{{ strtolower($data->requesting_party . ' ' . $data->device_type . ' ' . ($data->serial_number ?? '')) }}">
+                                                        <td class="row-number">{{ ($paginatedItems->currentPage() - 1) * $paginatedItems->perPage() + $loop->iteration }}</td>
+                                                        <td><span class="badge bg-primary">تسليم مستودع</span></td>
+                                                        <td>{{ $data->requesting_party }}</td>
+                                                        <td>{{ $data->device_type }}</td>
+                                                        <td>{{ $data->serial_number ?? '-' }}</td>
+                                                        <td>{{ optional($data->created_at)->format('Y-m-d H:i') }}</td>
+                                                        <td>{{ optional($data->updated_at)->format('Y-m-d H:i') }}</td>
+                                                        <td>-</td>
+                                                        <td>
+                                                            <a href="{{ route('warehouse-deliveries.show', $data) }}" class="btn btn-sm btn-info">عرض</a>
+                                                            @if(auth()->user()->role == 'manager' || $data->created_by == auth()->id())
+                                                                <a href="{{ route('warehouse-deliveries.edit', $data) }}" class="btn btn-sm btn-warning">تعديل</a>
+                                                            @endif
+                                                            @if(auth()->user()->role == 'manager' || $data->created_by == auth()->id())
+                                                                <form action="{{ route('warehouse-deliveries.destroy', $data) }}" method="POST" style="display:inline">
+                                                                    @csrf @method('DELETE')
+                                                                    <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
+                                                                </form>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
                                                 @endif
-                                            </td>
+                                            @endforeach
+                                        @endif
 
-                                            <!-- أزرار إجراءات الكشف الفني -->
-                                            <td>
-                                                <a href="{{ route('maintenance-reports.show', $report) }}" class="btn btn-sm btn-info">عرض</a>
+                                        {{-- عرض الكشوفات الفنية فقط --}}
+                                        @if(isset($reports))
+                                            @foreach($reports as $report)
+                                                <tr class="report-row" data-type="maintenance" data-status="{{ $report->status }}" data-search="{{ strtolower($report->requesting_party . ' ' . $report->device_name . ' ' . ($report->serial_number ?? '') . ' ' . $report->brand) }}">
+                                                    <td class="row-number">{{ ($reports->currentPage() - 1) * $reports->perPage() + $loop->iteration }}</td>
+                                                    <td><span class="badge bg-success">كشف فني</span></td>
+                                                    <td>{{ $report->requesting_party }}</td>
+                                                    <td>{{ $report->device_name }}</td>
+                                                    <td>{{ $report->serial_number ?? '-' }}</td>
+                                                    <td>{{ optional($report->created_at)->format('Y-m-d H:i') }}</td>
+                                                    <td>{{ optional($report->updated_at)->format('Y-m-d H:i') }}</td>
+                                                    <td>
+                                                        @if($report->status == 'قيد التنفيذ')
+                                                            <span class="badge bg-warning">قيد التنفيذ</span>
+                                                        @elseif($report->status == 'تم الإنجاز')
+                                                            <span class="badge bg-success">تم الإنجاز</span>
+                                                        @else
+                                                            <span class="badge bg-danger">تم الإلغاء</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('maintenance-reports.show', $report) }}" class="btn btn-sm btn-info">عرض</a>
+                                                        @if(auth()->user()->role == 'manager' || $report->created_by == auth()->id())
+                                                            <a href="{{ route('maintenance-reports.edit', $report) }}" class="btn btn-sm btn-warning">تعديل</a>
+                                                        @endif
+                                                        @if(auth()->user()->role == 'manager')
+                                                            @if($report->status == 'قيد التنفيذ')
+                                                                <form action="{{ route('maintenance.status.update', $report) }}" method="POST" style="display:inline">
+                                                                    @csrf @method('PATCH')
+                                                                    <input type="hidden" name="status" value="تم الإنجاز">
+                                                                    <button class="btn btn-sm btn-success">إنهاء</button>
+                                                                </form>
+                                                                <form action="{{ route('maintenance.status.update', $report) }}" method="POST" style="display:inline">
+                                                                    @csrf @method('PATCH')
+                                                                    <input type="hidden" name="status" value="تم الإلغاء">
+                                                                    <button class="btn btn-sm btn-danger">إلغاء</button>
+                                                                </form>
+                                                            @endif
+                                                        @endif
+                                                        @if(auth()->user()->role == 'manager' || $report->created_by == auth()->id())
+                                                            <form action="{{ route('maintenance-reports.destroy', $report) }}" method="POST" style="display:inline">
+                                                                @csrf @method('DELETE')
+                                                                <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
+                                                            </form>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
 
-                                                @if(auth()->user()->role == 'manager' || $report->created_by == auth()->id())
-                                                    <a href="{{ route('maintenance-reports.edit', $report) }}" class="btn btn-sm btn-warning">تعديل</a>
-                                                @endif
-
-                                                @if(auth()->user()->role == 'manager')
-                                                    @if($report->status == 'قيد التنفيذ')
-                                                        <form action="{{ route('maintenance.status.update', $report) }}" method="POST" style="display:inline">
-                                                            @csrf @method('PATCH')
-                                                            <input type="hidden" name="status" value="تم الإنجاز">
-                                                            <button class="btn btn-sm btn-success">إنهاء</button>
-                                                        </form>
-                                                        <form action="{{ route('maintenance.status.update', $report) }}" method="POST" style="display:inline">
-                                                            @csrf @method('PATCH')
-                                                            <input type="hidden" name="status" value="تم الإلغاء">
-                                                            <button class="btn btn-sm btn-danger">إلغاء</button>
-                                                        </form>
-                                                    @endif
-                                                @endif
-
-                                                @if(auth()->user()->role == 'manager' || $report->created_by == auth()->id())
-                                                    <form action="{{ route('maintenance-reports.destroy', $report) }}" method="POST" style="display:inline">
-                                                        @csrf @method('DELETE')
-                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                        
-                                        @php $deliveryStartNumber = $reports->count(); @endphp
-                                        @foreach($deliveries as $delivery)
-                                        <!-- صف تسليم المستودع -->
-                                        <tr class="report-row" data-type="warehouse" data-status="none" data-search="{{ strtolower($delivery->requesting_party . ' ' . $delivery->device_type . ' ' . ($delivery->serial_number ?? '')) }}">
-                                            <td class="row-number">{{ $deliveryStartNumber + $loop->iteration }}</td>
-                                            <td><span class="badge bg-primary">تسليم مستودع</span></td>
-                                            <td>{{ $delivery->requesting_party }}</td>
-                                            <td>{{ $delivery->device_type }}</td>
-                                            <td>{{ $delivery->serial_number ?? '-' }}</td>
-                                            <td>{{ optional($delivery->created_at)->format('Y-m-d') }}</td>
-                                            <td>-</td>
-
-                                            <!-- أزرار إجراءات تسليم المستودع -->
-                                            <td>
-                                                <a href="{{ route('warehouse-deliveries.show', $delivery) }}" class="btn btn-sm btn-info">عرض</a>
-
-                                                @if(auth()->user()->role == 'manager' || $delivery->created_by == auth()->id())
-                                                    <a href="{{ route('warehouse-deliveries.edit', $delivery) }}" class="btn btn-sm btn-warning">تعديل</a>
-                                                @endif
-
-                                                @if(auth()->user()->role == 'manager' || $delivery->created_by == auth()->id())
-                                                    <form action="{{ route('warehouse-deliveries.destroy', $delivery) }}" method="POST" style="display:inline">
-                                                        @csrf @method('DELETE')
-                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @endforeach
+                                        {{-- عرض تسليمات المستودع فقط --}}
+                                        @if(isset($deliveries))
+                                            @foreach($deliveries as $delivery)
+                                                <tr class="report-row" data-type="warehouse" data-status="none" data-search="{{ strtolower($delivery->requesting_party . ' ' . $delivery->device_type . ' ' . ($delivery->serial_number ?? '')) }}">
+                                                    <td class="row-number">{{ ($deliveries->currentPage() - 1) * $deliveries->perPage() + $loop->iteration }}</td>
+                                                    <td><span class="badge bg-primary">تسليم مستودع</span></td>
+                                                    <td>{{ $delivery->requesting_party }}</td>
+                                                    <td>{{ $delivery->device_type }}</td>
+                                                    <td>{{ $delivery->serial_number ?? '-' }}</td>
+                                                    <td>{{ optional($delivery->created_at)->format('Y-m-d H:i') }}</td>
+                                                    <td>{{ optional($delivery->updated_at)->format('Y-m-d H:i') }}</td>
+                                                    <td>-</td>
+                                                    <td>
+                                                        <a href="{{ route('warehouse-deliveries.show', $delivery) }}" class="btn btn-sm btn-info">عرض</a>
+                                                        @if(auth()->user()->role == 'manager' || $delivery->created_by == auth()->id())
+                                                            <a href="{{ route('warehouse-deliveries.edit', $delivery) }}" class="btn btn-sm btn-warning">تعديل</a>
+                                                        @endif
+                                                        @if(auth()->user()->role == 'manager' || $delivery->created_by == auth()->id())
+                                                            <form action="{{ route('warehouse-deliveries.destroy', $delivery) }}" method="POST" style="display:inline">
+                                                                @csrf @method('DELETE')
+                                                                <button class="btn btn-sm btn-danger" onclick="return confirm('متأكد؟')">حذف</button>
+                                                            </form>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
+                            </div>
+
+                            {{-- روابط Pagination --}}
+                            <div class="d-flex justify-content-center mt-4">
+                                @if(isset($paginatedItems))
+                                    {{ $paginatedItems->links('pagination::bootstrap-5') }}
+                                @elseif(isset($reports))
+                                    {{ $reports->links('pagination::bootstrap-5') }}
+                                @elseif(isset($deliveries))
+                                    {{ $deliveries->links('pagination::bootstrap-5') }}
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -221,11 +314,16 @@ function applyFilters() {
 }
 
 function renumberRows() {
+    // الحصول على رقم الصفحة من URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = parseInt(urlParams.get('page')) || 1;
+    const perPage = 10; // نفس القيمة في Controller
+
     const visibleRows = document.querySelectorAll('.report-row:not([style*="display: none"])');
     visibleRows.forEach((row, index) => {
         const numberCell = row.querySelector('.row-number');
         if (numberCell) {
-            numberCell.textContent = index + 1;
+            numberCell.textContent = (page - 1) * perPage + index + 1;
         }
     });
 }
