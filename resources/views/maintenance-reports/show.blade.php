@@ -1,202 +1,410 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" id="printable-area">
-    <div class="no-print mb-3">
-        <a href="{{ route('maintenance-reports.index') }}" class="btn btn-secondary">رجوع</a>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.page-wrap {
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+    background: #e8eaed;
+    padding: 20px 16px 48px;
+    min-height: 100vh;
+}
+
+/* ── Action bar ── */
+.action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 794px;
+    margin: 0 auto 14px;
+}
+.btn {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 18px;
+    border-radius: 7px;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    background: #fff;
+    color: #374151;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+    transition: background .15s;
+}
+.btn:hover      { background: #f3f4f6; }
+.btn-dark       { background: #111827; color: #fff; border-color: #111827; }
+.btn-dark:hover { background: #1f2937; }
+.btn-success    { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.btn-success:hover { background: #dcfce7; }
+.btn-danger     { background: #fff5f5; color: #b91c1c; border-color: #fecaca; }
+.btn-danger:hover  { background: #fee2e2; }
+.btn-info       { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.btn-info:hover    { background: #dbeafe; }
+
+/* ── A4 sheet ── */
+.a4 {
+    width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    padding: 40px 44px 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Document header ── */
+.doc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 2.5px solid #0f172a;
+    margin-bottom: 24px;
+}
+.org-block p {
+    font-size: 14px;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 2.1;
+    margin: 0;
+}
+.org-block p:first-child { font-size: 15px; font-weight: 700; }
+
+.title-block { text-align: center; flex: 1; padding: 2px 12px 0; }
+.title-block h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -.5px;
+    margin-bottom: 10px;
+}
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 20px;
+}
+.status-pill .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .8;
+}
+.pill-pending  { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+.pill-done     { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+.pill-canceled { background: #fff5f5; color: #991b1b; border: 1px solid #fca5a5; }
+.spacer { width: 160px; flex-shrink: 0; }
+
+/* ── Field rows ── */
+.f-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* ── Individual field box ── */
+.field {
+    flex: 1;
+    min-width: 0;
+    border: 1.5px solid #94a3b8;
+    border-radius: 7px;
+    padding: 11px 16px 10px;
+    background: #fff;
+}
+.f-lbl {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+.f-val {
+    font-size: 17px;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.45;
+    min-height: 26px;
+    word-break: break-word;
+}
+
+/* ── Textarea field ── */
+.ta-field {
+    border: 1.5px solid #94a3b8;
+    border-radius: 7px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    margin-bottom: 10px;
+}
+.ta-lbl {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 8px;
+}
+.ta-val {
+    font-size: 17px;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.85;
+    min-height: 80px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ── Divider ── */
+.rule { height: 1.5px; background: #e2e8f0; margin: 20px 0; }
+
+/* ── Signature row ── */
+.sig-row { display: flex; gap: 10px; margin-top: 4px; }
+.sig-cell {
+    flex: 1;
+    /* border: 1.5px solid #94a3b8; */
+    border-radius: 7px;
+    padding: 14px 16px;
+    text-align: center;
+}
+.sig-lbl {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: .04em;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+.sig-line { border-bottom: 1px solid #94a3b8; margin: 0 10px; }
+.sig-name { font-size: 17px; font-weight: 500; color: #1e293b; margin-top: 8px; }
+
+/* ── Meta row below sheet ── */
+.meta-row {
+    font-size: 12px;
+    color: #94a3b8;
+    max-width: 794px;
+    margin: 12px auto 0;
+    display: flex;
+    gap: 6px 18px;
+    flex-wrap: wrap;
+}
+.meta-row strong { color: #64748b; font-weight: 500; }
+
+/* ══════════════════════════════
+   PRINT
+══════════════════════════════ */
+@media print {
+    @page { size: A4 portrait; margin: 1.2cm 1.5cm; }
+    .no-print { 
+        display: none !important; 
+    }
+    .action-bar,
+    .meta-row,
+    nav, .navbar,
+    footer { display: none !important; }
+
+    .page-wrap {
+        background: #fff !important;
+        padding: 0 !important;
+        min-height: unset;
+    }
+    .a4 {
+        width: 100% !important;
+        min-height: unset !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .doc-header {
+        border-bottom: 2px solid #000 !important;
+        margin-bottom: 16px !important;
+        padding-bottom: 12px !important;
+    }
+    .org-block p           { font-size: 13px !important; line-height: 1.9 !important; }
+    .org-block p:first-child { font-size: 14px !important; }
+    .title-block h1        { font-size: 24px !important; }
+
+    .status-pill {
+        background: #fff !important;
+        color: #333 !important;
+        border: 1px solid #999 !important;
+        font-size: 12px !important;
+    }
+    .status-pill .dot { display: none !important; }
+
+    .f-row       { gap: 8px !important; margin-bottom: 8px !important; }
+    .field       { border: 1.5px solid #7a8a9a !important; border-radius: 5px !important; padding: 9px 13px !important; }
+    .f-lbl       { font-size: 18px !important; margin-bottom: 5px !important; }
+    .f-val       { font-size: 17px !important; }
+
+    .ta-field    { border: 1.5px solid #7a8a9a !important; border-radius: 5px !important; padding: 10px 13px !important; }
+    .ta-lbl      { font-size: 18px !important; }
+    .ta-val      { font-size: 17px !important; min-height: 60px !important; }
+
+    .rule        { background: #c8cdd3 !important; margin: 16px 0 !important; }
+
+    .sig-row     { gap: 8px !important; }
+    .sig-cell    { /* border-radius: 5px !important; */ padding: 12px 14px !important; }
+    .sig-lbl     { font-size: 18px !important; margin-bottom: 10px !important; }
+    .sig-name    { font-size: 18px !important; }
+}
+</style>
+
+<div class="page-wrap">
+
+    {{-- ── Action bar (hidden on print) ── --}}
+    <div class="action-bar">
+        <a href="{{ route('maintenance-reports.index') }}" class="btn">← رجوع</a>
         <a href="{{ route('home') }}" class="btn btn-info">الصفحة الرئيسية</a>
-        <button onclick="window.print()" class="btn btn-primary">طباعة</button>
+        <button onclick="window.print()" class="btn btn-dark">◫ طباعة</button>
+
         @if(auth()->user()->role == 'manager' && $maintenanceReport->status == 'قيد التنفيذ')
             <form action="{{ route('maintenance.status.update', $maintenanceReport) }}" method="POST" style="display:inline">
                 @csrf @method('PATCH')
                 <input type="hidden" name="status" value="تم الإنجاز">
-                <button class="btn btn-success">إنهاء الكشف</button>
+                <button class="btn btn-success">✓ إنهاء الكشف</button>
             </form>
             <form action="{{ route('maintenance.status.update', $maintenanceReport) }}" method="POST" style="display:inline">
                 @csrf @method('PATCH')
                 <input type="hidden" name="status" value="تم الإلغاء">
-                <button class="btn btn-danger">إلغاء الكشف</button>
+                <button class="btn btn-danger">✕ إلغاء الكشف</button>
             </form>
         @endif
     </div>
 
-    <!-- معلومات الإنشاء والتعديل (للمدير أو صاحب الكشف) - في الأعلى -->
+    {{-- ── A4 document ── --}}
+    <div class="a4">
+
+        {{-- Header --}}
+        <div class="doc-header">
+            <div class="org-block">
+                <p>الجمهورية العربية السورية</p>
+                <p>وزارة الإعلام</p>
+                <p>الهيئة العامة للإذاعة والتلفزيون</p>
+                <p>مديرية المعلوماتية — دائرة الصيانة</p>
+            </div>
+            <div class="title-block">
+                <h1>كشف فني</h1>
+                <span class="status-pill no-print
+                    @if($maintenanceReport->status == 'قيد التنفيذ')  pill-pending
+                    @elseif($maintenanceReport->status == 'تم الإنجاز') pill-done
+                    @else pill-canceled @endif">
+                    <span class="dot"></span>{{ $maintenanceReport->status }}
+                </span>
+            </div>
+            <div class="spacer"></div>
+        </div>
+
+        {{-- Requesting party --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">الجهة طالبة الصيانة</span>
+                <div class="f-val">{{ $maintenanceReport->requesting_party ?? '—' }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">الاسم والكنية</span>
+                <div class="f-val">{{ $maintenanceReport->reporter_name ?? '—' }}</div>
+            </div>
+        </div>
+
+        {{-- Device --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">اسم الجهاز</span>
+                <div class="f-val">{{ $maintenanceReport->device_name ?? '—' }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">الماركة</span>
+                <div class="f-val">{{ $maintenanceReport->brand ?? '—' }}</div>
+            </div>
+        </div>
+
+        {{-- Reporter / date / serial --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">الرقم التسلسلي</span>
+                <div class="f-val">{{ $maintenanceReport->serial_number ?? '—' }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">التاريخ</span>
+                <div class="f-val">{{ optional($maintenanceReport->report_date)->format('Y-m-d') ?? '—' }}</div>
+            </div>
+           
+        </div>
+
+         {{-- Initial inspection --}}
+        <div class="ta-field">
+            <span class="ta-lbl">الكشف الفني الأولي</span>
+            <div class="ta-val">{{ $maintenanceReport->initial_inspection ?: '—' }}</div>
+        </div>
+
+        {{-- Failure + location --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">سبب العطل</span>
+                <div class="f-val">{{ $maintenanceReport->failure_cause ?: '—' }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">مكان تواجد الجهاز</span>
+                <div class="f-val">{{ $maintenanceReport->device_location ?: '—' }}</div>
+            </div>
+        </div>
+
+
+        <div class="rule"></div>
+
+        {{-- Signatures --}}
+        <div class="sig-row">
+            <div class="sig-cell">
+                <span class="sig-lbl">المسؤول الفني</span>
+                <!-- <div class="sig-line"></div> -->
+                <div class="sig-name">{{ $maintenanceReport->technical_manager ?? '—' }}</div>
+            </div>
+            <div class="sig-cell">
+                <span class="sig-lbl">ر.د الصيانة والدعم الفني</span>
+                <!-- <div class="sig-line"></div> -->
+                <div class="sig-name">{{ $maintenanceReport->maintenance_head ?? '—' }}</div>
+            </div>
+            <div class="sig-cell">
+                <span class="sig-lbl">مدير المعلوماتية</span>
+                <!-- <div class="sig-line"></div> -->
+                <div class="sig-name">{{ $maintenanceReport->it_manager ?? '—' }}</div>
+            </div>
+        </div>
+
+    </div>{{-- /a4 --}}
+
+    {{-- ── Meta info below sheet (hidden on print) ── --}}
     @if(auth()->user()->role == 'manager' || $maintenanceReport->created_by == auth()->id())
-    <div class="no-print mb-2" style="text-align: right; font-size: 12px; color: #6c757d;">
-        <span>تاريخ الإنشاء: {{ $maintenanceReport->created_at?->format('Y-m-d H:i') ?? '-' }}</span>
+    <div class="meta-row">
+        <span>تاريخ الإنشاء: <strong>{{ $maintenanceReport->created_at?->format('Y-m-d H:i') ?? '—' }}</strong></span>
         @if($maintenanceReport->updated_by && $maintenanceReport->created_at != $maintenanceReport->updated_at)
-        <span class="mx-2">|</span>
-        <span>تاريخ آخر تعديل: {{ $maintenanceReport->updated_at?->format('Y-m-d H:i') ?? '-' }}</span>
-        <span class="mx-2">|</span>
-        <span>آخر تعديل بواسطة: <strong>{{ $maintenanceReport->updater?->name ?? 'غير معروف' }}</strong></span>
+            <span>آخر تعديل: <strong>{{ $maintenanceReport->updated_at?->format('Y-m-d H:i') ?? '—' }}</strong></span>
+            <span>تعديل بواسطة: <strong>{{ $maintenanceReport->updater?->name ?? 'غير معروف' }}</strong></span>
         @endif
         @if(auth()->user()->role == 'manager')
-        <br>
-        <span>المنشئ: <strong>{{ $maintenanceReport->creator?->name ?? 'غير معروف' }}</strong></span>
+            <span>المنشئ: <strong>{{ $maintenanceReport->creator?->name ?? 'غير معروف' }}</strong></span>
         @endif
     </div>
     @endif
 
-    <div class="card" id="report-card">
-        <div class="card-header" style="position: relative;">
-            <!-- العنوان في الزاوية اليمنى العليا -->
-            <div class="header-title" style="position: absolute; top: 10px; right: 15px; text-align: right;">
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">الجمهورية العربية السورية</h5>
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">وزارة الإعلام</h5>
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">الهيئة العامة للإذاعة والتلفزيون</h5>
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">مديرية المعلوماتية - دائرة الصيانة</h5>
-            </div>
-            <div class="text-center" style="padding-top: 80px;">
-                <h4 style="font-size: 24px; font-weight: bold;">كشف فني
-                    <span class="badge
-                        @if($maintenanceReport->status == 'قيد التنفيذ') bg-warning
-                        @elseif($maintenanceReport->status == 'تم الإنجاز') bg-success
-                        @else bg-danger @endif">
-                        {{ $maintenanceReport->status }}
-                    </span>
-                </h4>
-            </div>
-        </div>
-        <div class="card-body">
-            <!-- بيانات أساسية -->
-           <div class="row mb-3">
-    <div class="col-md-4">
-        <label class="fw-bold">الجهة طالبة الصيانة:</label>
-        <div class="p-2">{{ $maintenanceReport->requesting_party }}</div>
-    </div>
-</div>
+</div>{{-- /page-wrap --}}
 
-<div class="row mb-3">
-    <div class="col-md-4">
-        <label class="fw-bold">اسم الجهاز:</label>
-        <div class="p-2">{{ $maintenanceReport->device_name }}</div>
-    </div>
-    <div class="col-md-4">
-        <label class="fw-bold">الماركة:</label>
-        <div class="p-2">{{ $maintenanceReport->brand }}</div>
-    </div>
-</div>
-
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label class="fw-bold">الاسم والكنية:</label>
-                    <div class="p-2">{{ $maintenanceReport->reporter_name }}</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">التاريخ:</label>
-                    <div class="p-2">{{ optional($maintenanceReport->report_date)->format('Y-m-d') }}</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">الرقم التسلسلي:</label>
-                    <div class="p-2">{{ $maintenanceReport->serial_number ?? '-' }}</div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="fw-bold">سبب العطل:</label>
-                    <div class="p-2">{{ $maintenanceReport->failure_cause ?: '-' }}</div>
-                </div>
-            </div>
-
-            <!-- الكشف الفني الأولي (مطابق لـ textarea في الإنشاء) -->
-            <div class="mb-3">
-                <label class="fw-bold">الكشف الفني الأولي:</label>
-                <div class="form-control-static" style="min-height: calc(1.5em * 3 + 0.75rem * 2); padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.375rem;">{{ $maintenanceReport->initial_inspection ?: '-' }}</div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="fw-bold">مكان تواجد الجهاز:</label>
-                    <div class="p-2">{{ $maintenanceReport->device_location ?: '-' }}</div>
-                </div>
-            </div>
-
-            <!-- <div class="row mb-3">
-                
-            </div> -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label class="fw-bold">المسؤول الفني:</label>
-                    <div class="p-2">{{ $maintenanceReport->technical_manager }}</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
-                    <div class="p-2">{{ $maintenanceReport->maintenance_head }}</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">مدير المعلوماتية:</label>
-                    <div class="p-2">{{ $maintenanceReport->it_manager }}</div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<style>
-.no-print { display: block; }
-.card-header h5 { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #000; }
-.card-header h4 { font-size: 24px; font-weight: bold; margin-bottom: 0; color: #000; }
-.card-body label { font-size: 17px; font-weight: bold; margin-bottom: 0px; color: #000; display: block; }
-.card-body .border { font-size: 17px; padding: 3px 12px; min-height: auto; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
-.card-body .row { margin-bottom: 10px; display: flex; flex-wrap: wrap; }
-.card-body h5 { font-size: 18px; font-weight: bold; margin: 10px 0; color: #000; }
-
-@media print {
-    * { box-sizing: border-box; }
-    .no-print { display: none !important; }
-    .navbar { display: none !important; }
-    .footer { display: none !important; }
-    .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
-    .card { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; }
-    .card-header { border-bottom: none !important; padding: 10px 15px !important; text-align: center !important; position: relative !important; }
-    .card-header .text-end { text-align: center !important; }
-    .card-header .header-title {
-        position: absolute !important;
-        top: 5px !important;
-        right: 10px !important;
-        text-align: right !important;
-    }
-    .card-header .header-title h5 {
-        font-size: 11px !important;
-        margin-bottom: 2px !important;
-    }
-    .card-body { padding: 10px 15px !important; width: 100% !important; padding-top: 25px !important; }
-    .row { display: flex !important; flex-wrap: wrap !important; margin: 0 -5px !important; margin-bottom: 8px !important; width: 100% !important; }
-    .col-md-4, .col-md-6, .col-12 {
-        display: inline-block !important;
-        vertical-align: top !important;
-        padding: 0 5px !important;
-        margin-bottom: 5px !important;
-    }
-    .col-md-4 { width: 33.333% !important; }
-    .col-md-6 { width: 50% !important; }
-    .col-12 { width: 100% !important; }
-    .border {
-        border: 1px solid #ddd !important;
-        padding: 4px 8px !important;
-        min-height: auto !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        font-size: 14px !important;
-    }
-    .mb-3 { margin-bottom: 8px !important; }
-    .p-2 { padding: 4px 8px !important; }
-    h5 { font-size: 14px !important; margin: 5px 0 !important; color: #000 !important; }
-    h4 { font-size: 16px !important; margin: 5px 0 !important; color: #000 !important; }
-    label {
-        font-size: 13px !important;
-        margin-bottom: 2px !important;
-        color: #000 !important;
-        font-weight: bold !important;
-        display: block !important;
-    }
-    body { font-size: 14px !important; direction: rtl !important; }
-    .badge { display: none !important; }
-    #printable-area { width: 100% !important; max-width: 100% !important; }
-}
-.border { white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
-</style>
 @endsection

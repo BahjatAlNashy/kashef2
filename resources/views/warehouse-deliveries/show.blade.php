@@ -1,174 +1,266 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" id="printable-area">
-
-    <!-- أزرار الإجراءات (تُخفى عند الطباعة) -->
-    <div class="no-print mb-3">
-        <a href="{{ route('warehouse-deliveries.index') }}" class="btn btn-secondary">رجوع</a>
-        <a href="{{ route('home') }}" class="btn btn-info">الصفحة الرئيسية</a>
-        <button onclick="window.print()" class="btn btn-primary">طباعة</button>
-    </div>
-
-    <!-- معلومات الإنشاء والتعديل (للمدير أو صاحب الكشف) - في الأعلى -->
-    @if(auth()->user()->role == 'manager' || $warehouseDelivery->created_by == auth()->id())
-    <div class="no-print mb-2" style="text-align: right; font-size: 12px; color: #6c757d;">
-        <span>تاريخ الإنشاء: {{ $warehouseDelivery->created_at?->format('Y-m-d H:i') ?? '-' }}</span>
-        @if($warehouseDelivery->updated_by && $warehouseDelivery->created_at != $warehouseDelivery->updated_at)
-        <span class="mx-2">|</span>
-        <span>تاريخ آخر تعديل: {{ $warehouseDelivery->updated_at?->format('Y-m-d H:i') ?? '-' }}</span>
-        <span class="mx-2">|</span>
-        <span>آخر تعديل بواسطة: <strong>{{ $warehouseDelivery->updater?->name ?? 'غير معروف' }}</strong></span>
-        @endif
-        @if(auth()->user()->role == 'manager')
-        <br>
-        <span>المنشئ: <strong>{{ $warehouseDelivery->creator?->name ?? 'غير معروف' }}</strong></span>
-        @endif
-    </div>
-    @endif
-
-    <!-- بطاقة الكشف -->
-    <div class="card" id="report-card">
-        <div class="card-header" style="position: relative;">
-            <!-- العنوان في الزاوية اليمنى العليا -->
-            <div class="header-title" style="position: absolute; top: 10px; right: 15px; text-align: right;">
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">الجمهورية العربية السورية</h5>
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">وزارة الإعلام</h5>
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">الهيئة العامة للإذاعة والتلفزيون</h5>
-                <h5 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">مديرية المعلوماتية - دائرة الصيانة</h5>
-            </div>
-            <div class="text-center" style="padding-top: 80px;">
-                <h4 style="font-size: 24px; font-weight: bold;">كشف تسليم مستودع</h4>
-            </div>
-        </div>
-
-        <div class="card-body">
-            <!-- بيانات الجهاز -->
-             <div class="row mb-3">
-    <div class="col-md-4">
-        <label class="fw-bold">الجهة طالبة الصيانة:</label>
-        <div class="p-2">{{ $warehouseDelivery->requesting_party }}</div>
-    </div>
-</div>
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label class="fw-bold">نوع الجهاز:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->device_type ?? '-' }}</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">الماركة:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->brand ?? '-' }}</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="fw-bold">الرقم التسلسلي:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->serial_number ?? '-' }}</div>
-                </div>
-            </div>
-
-            <!-- الوصف (مطابق لـ textarea في الإنشاء) -->
-            <div class="mb-3">
-                <label class="fw-bold">الوصف:</label>
-                <div class="form-control-static" style="min-height: calc(1.5em * 3 + 0.75rem * 2); padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.375rem;">{{ $warehouseDelivery->description }}</div>
-            </div>
-
-            <!-- حالة الجهاز -->
-            <div class="mb-3">
-                <label class="fw-bold">حالة الجهاز:</label>
-                <div class="p-2 bg-light">{{ $warehouseDelivery->device_status ?? '-' }}</div>
-            </div>
-
-            <!-- التاريخ والفحص -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="fw-bold">التاريخ:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->date }}</div>
-                </div>
-                <div class="col-md-6">
-                    <label class="fw-bold">تم الفحص من قبل:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->checked_by }}</div>
-                </div>
-            </div>
-
-            <!-- الاعتمادات -->
-            <div class="row">
-                <div class="col-md-6">
-                    <label class="fw-bold">مدير الصيانة والدعم الفني:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->maintenance_manager }}</div>
-                </div>
-                <div class="col-md-6">
-                    <label class="fw-bold">مدير المعلوماتية:</label>
-                    <div class="p-2 bg-light">{{ $warehouseDelivery->it_manager }}</div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
 
 <style>
-.no-print { display: block; }
-.card-header h5 { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #000; }
-.card-header h4 { font-size: 24px; font-weight: bold; margin-bottom: 0; color: #000; }
-.card-body label { font-size: 17px; font-weight: bold; margin-bottom: 0px; color: #000; display: block; }
-.card-body .border { font-size: 17px; padding: 3px 12px; min-height: auto; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
-.card-body .row { margin-bottom: 10px; display: flex; flex-wrap: wrap; }
-.card-body h5 { font-size: 18px; font-weight: bold; margin: 10px 0; color: #000; }
+@import url('https://googleapis.com');
 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.page-wrap {
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+    background: #e8eaed;
+    padding: 20px 16px 48px;
+    min-height: 100vh;
+}
+
+/* ── Action bar ── */
+.action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 794px;
+    margin: 0 auto 14px;
+}
+.btn {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 18px;
+    border-radius: 7px;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+    background: #fff;
+    color: #374151;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+    transition: background .15s;
+}
+.btn:hover      { background: #f3f4f6; }
+.btn-dark       { background: #111827; color: #fff; border-color: #111827; }
+.btn-info       { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+
+/* ── A4 sheet ── */
+.a4 {
+    width: 794px;
+    min-height: 1123px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    padding: 40px 44px 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Document header ── */
+.doc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 2.5px solid #0f172a;
+    margin-bottom: 24px;
+}
+.org-block p {
+    font-size: 14px;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.8;
+    margin: 0;
+}
+.org-block p:first-child { font-size: 15px; font-weight: 700; }
+
+.title-block { text-align: center; flex: 1; padding: 2px 12px 0; }
+.title-block h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -.5px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+/* ── Field rows ── */
+.f-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.field {
+    flex: 1;
+    min-width: 0;
+    border: 1.5px solid #94a3b8;
+    border-radius: 7px;
+    padding: 11px 16px 10px;
+    background: #fff;
+}
+.f-lbl {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+.f-val {
+    font-size: 18px;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.45;
+    min-height: 24px;
+}
+
+/* ── Textarea field ── */
+.ta-field {
+    border: 1.5px solid #94a3b8;
+    border-radius: 7px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    margin-bottom: 10px;
+}
+.ta-lbl {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 8px;
+}
+.ta-val {
+    font-size: 18px;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.8;
+    min-height: 80px;
+    white-space: pre-wrap;
+}
+
+.rule { height: 1.5px; background: #e2e8f0; margin: 20px 0; }
+
+.sig-row { display: flex; gap: 10px; margin-top: 10px; }
+.sig-cell {
+    flex: 1;
+    /* border: 1.5px solid #94a3b8; */
+    border-radius: 7px;
+    padding: 14px 16px;
+    text-align: center;
+}
+.sig-lbl {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 15px;
+}
+.sig-line { border-bottom: 1px solid #94a3b8; margin: 0 10px; }
+.sig-name { font-size: 18px; font-weight: 500; color: #1e293b; margin-top: 8px; }
+
+/* ── Print Settings ── */
 @media print {
-    * { box-sizing: border-box; }
-    .no-print { display: none !important; }
-    .navbar { display: none !important; }
-    .footer { display: none !important; }
-    .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
-    .card { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; }
-    .card-header { border-bottom: none !important; padding: 10px 15px !important; text-align: center !important; position: relative !important; }
-    .card-header .text-end { text-align: center !important; }
-    .card-header .header-title {
-        position: absolute !important;
-        top: 5px !important;
-        right: 10px !important;
-        text-align: right !important;
-    }
-    .card-header .header-title h5 {
-        font-size: 11px !important;
-        margin-bottom: 2px !important;
-    }
-    .card-body { padding: 10px 15px !important; width: 100% !important; padding-top: 25px !important; }
-    .row { display: flex !important; flex-wrap: wrap !important; margin: 0 -5px !important; margin-bottom: 8px !important; width: 100% !important; }
-    .col-md-4, .col-md-6, .col-12 {
-        display: inline-block !important;
-        vertical-align: top !important;
-        padding: 0 5px !important;
-        margin-bottom: 5px !important;
-    }
-    .col-md-4 { width: 33.333% !important; }
-    .col-md-6 { width: 50% !important; }
-    .col-12 { width: 100% !important; }
-    .border {
-        border: 1px solid #ddd !important;
-        padding: 4px 8px !important;
-        min-height: auto !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        font-size: 14px !important;
-        background-color: transparent !important;
-    }
-    .bg-light { background-color: transparent !important; }
-    .mb-3 { margin-bottom: 8px !important; }
-    .p-2 { padding: 4px 8px !important; }
-    .p-3 { padding: 4px 8px !important; }
-    h5 { font-size: 14px !important; margin: 5px 0 !important; color: #000 !important; }
-    h4 { font-size: 16px !important; margin: 5px 0 !important; color: #000 !important; }
-    label {
-        font-size: 13px !important;
-        margin-bottom: 2px !important;
-        color: #000 !important;
-        font-weight: bold !important;
-        display: block !important;
-    }
-    body { font-size: 14px !important; direction: rtl !important; }
-    #printable-area { width: 100% !important; max-width: 100% !important; }
+    @page { size: A4 portrait; margin: 1.2cm; }
+    .action-bar, nav, footer, .no-print { display: none !important; }
+    .page-wrap { background: #fff !important; padding: 0 !important; }
+    .a4 { width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+    .doc-header { border-bottom: 2px solid #000 !important; }
+    .field, .ta-field, .sig-cell { border-color: #000 !important; }
 }
 </style>
+
+<div class="page-wrap">
+
+    <div class="action-bar no-print">
+        <a href="{{ route('warehouse-deliveries.index') }}" class="btn">← رجوع</a>
+        <a href="{{ route('home') }}" class="btn btn-info">الصفحة الرئيسية</a>
+        <button onclick="window.print()" class="btn btn-dark">◫ طباعة الكشف</button>
+    </div>
+
+    <div class="a4">
+
+        {{-- الهيدر الرسمي --}}
+        <div class="doc-header">
+            <div class="org-block">
+                <p>الجمهورية العربية السورية</p>
+                <p>وزارة الإعلام</p>
+                <p>الهيئة العامة للإذاعة والتلفزيون</p>
+                <p>مديرية المعلوماتية - دائرة الصيانة</p>
+            </div>
+
+            <div class="title-block">
+                <h1>كشف تسليم مستودع</h1>
+            </div>
+            
+            <div style="width: 180px;"></div> {{-- موازن للهيدر --}}
+        </div>
+{{-- الجهة طالبة الصيانة --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">الجهة طالبة الصيانة</span>
+                <div class="f-val">{{ $warehouseDelivery->requesting_party }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">التاريخ</span>
+                <div class="f-val">{{ $warehouseDelivery->date }}</div>
+            </div>
+        </div>  
+       
+        {{-- بيانات الجهاز --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">نوع الجهاز</span>
+                <div class="f-val">{{ $warehouseDelivery->device_type ?? '-' }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">الماركة</span>
+                <div class="f-val">{{ $warehouseDelivery->brand ?? '-' }}</div>
+            </div>
+            <div class="field">
+                <span class="f-lbl">S/N الرقم التسلسلي</span>
+                <div class="f-val">{{ $warehouseDelivery->serial_number ?? '-' }}</div>
+            </div>
+        </div>
+
+        {{-- الوصف --}}
+        <div class="ta-field">
+            <span class="ta-lbl">الوصف التفصيلي:</span>
+            <div class="ta-val">{{ $warehouseDelivery->description }}</div>
+        </div>
+
+        {{-- حالة الجهاز --}}
+        <div class="f-row">
+            <div class="field">
+                <span class="f-lbl">حالة الجهاز</span>
+                <div class="f-val">{{ $warehouseDelivery->device_status ?? '-' }}</div>
+            </div>
+        </div>
+
+        <div class="rule"></div>
+
+        {{-- التوقيعات --}}
+        <div class="sig-row">
+            <div class="sig-cell">
+                <span class="sig-lbl">تم الفحص من قبل</span>
+                <!-- <div class="sig-line"></div> -->
+                <div class="sig-name">{{ $warehouseDelivery->checked_by }}</div>
+            </div>
+            <div class="sig-cell">
+                <span class="sig-lbl">مدير الصيانة والدعم الفني</span>
+                <!-- <div class="sig-line"></div> -->
+                <div class="sig-name">{{ $warehouseDelivery->maintenance_manager }}</div>
+            </div>
+            <div class="sig-cell">
+                <span class="sig-lbl">مدير المعلوماتية</span>
+                <!-- <div class="sig-line"></div> -->
+                <div class="sig-name">{{ $warehouseDelivery->it_manager }}</div>
+            </div>
+        </div>
+
+    </div> {{-- نهاية A4 --}}
+
+</div>
+
 @endsection

@@ -13,7 +13,7 @@ class UserController extends Controller
     // ============================================================
     public function index()
     {
-        $users = User::withTrashed()->with('updater')->get();
+        $users = User::withTrashed()->get();
         return view('users.index', compact('users'));
     }
 
@@ -82,7 +82,7 @@ class UserController extends Controller
             $data['password'] = Hash::make($validated['password']);
         }
 
-        $data['updated_by'] = auth()->id();
+        // $data['updated_by'] = auth()->id();
         $user->update($data);
 
         return redirect()->route('users.index')->with('success', 'تم تحديث المستخدم بنجاح');

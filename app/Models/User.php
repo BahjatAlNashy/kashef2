@@ -22,7 +22,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'updated_by',
+        'name', 'email', 'password', 'role'/*, 'updated_by'*/,
     ];
 
     // أضف علاقة عكسية (اختيارية)
@@ -31,10 +31,10 @@ class User extends Authenticatable
         return $this->hasMany(MaintenanceReport::class, 'created_by');
     }
 
-    public function updater()
-    {
-        return $this->belongsTo(User::class, 'updated_by')->withTrashed();
-    }
+    // public function updater()
+    // {
+    //     return $this->belongsTo(User::class, 'updated_by')->withTrashed();
+    // }
 
     /**
      * The attributes that should be hidden for serialization.
