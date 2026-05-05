@@ -94,7 +94,7 @@ class WarehouseDeliveryController extends Controller
             'serial_number' => 'nullable|string|max:255',
             'device_status' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'checked_by' => 'required|string|max:255',
+            'checked_by' => 'nullable|string|max:255',
             'date' => 'nullable|date',
             'maintenance_manager' => 'nullable|string|max:255',
             'it_manager' => 'nullable|string|max:255',

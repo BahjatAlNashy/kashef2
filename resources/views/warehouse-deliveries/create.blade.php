@@ -88,4 +88,22 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            if (event.target.tagName !== 'TEXTAREA') {
+                event.preventDefault(); // منع الحفظ
+
+                // البحث عن جميع العناصر التي يمكن التركيز عليها (Inputs, Selects)
+                const form = event.target.form;
+                const index = Array.prototype.indexOf.call(form, event.target);
+                
+                // الانتقال إلى العنصر التالي إذا وجد
+                if (form.elements[index + 1]) {
+                    form.elements[index + 1].focus();
+                }
+            }
+        }
+    });
+</script>
 @endsection

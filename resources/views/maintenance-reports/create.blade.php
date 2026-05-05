@@ -97,7 +97,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="fw-bold">ر.د الصيانة والدعم الفني:</label>
-                       <input type="text" name="maintenance_head" class="form-control" value="م . نهى الأحمد">
+                        <input type="text" name="maintenance_head" class="form-control" value="م . نهى الأحمد">
                     </div>
                     <div class="col-md-6">
                         <label class="fw-bold">مدير المعلوماتية:</label>
@@ -113,4 +113,24 @@
         </div>
     </form>
 </div>
+   
+   <script>
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            if (event.target.tagName !== 'TEXTAREA') {
+                event.preventDefault(); // منع الحفظ
+
+                // البحث عن جميع العناصر التي يمكن التركيز عليها (Inputs, Selects)
+                const form = event.target.form;
+                const index = Array.prototype.indexOf.call(form, event.target);
+                
+                // الانتقال إلى العنصر التالي إذا وجد
+                if (form.elements[index + 1]) {
+                    form.elements[index + 1].focus();
+                }
+            }
+        }
+    });
+</script>
+
 @endsection

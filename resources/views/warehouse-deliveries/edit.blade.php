@@ -20,6 +20,12 @@
 
         <div class="card">
             <div class="card-body">
+                 <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="fw-bold">الجهة الطالبة:</label>
+                        <input type="text" name="requesting_party" value="{{ $warehouseDelivery->requesting_party }}" class="form-control" required>
+                    </div>
+                </div>
                 <!-- الصف الأول: بيانات الجهاز -->
                 <div class="row mb-3">
                     <div class="col-md-3">
@@ -33,10 +39,6 @@
                     <div class="col-md-3">
                         <label class="fw-bold">الرقم التسلسلي:</label>
                         <input type="text" name="serial_number" value="{{ $warehouseDelivery->serial_number }}" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="fw-bold">الجهة الطالبة:</label>
-                        <input type="text" name="requesting_party" value="{{ $warehouseDelivery->requesting_party }}" class="form-control" required>
                     </div>
                 </div>
 
@@ -86,4 +88,22 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            if (event.target.tagName !== 'TEXTAREA') {
+                event.preventDefault(); // منع الحفظ
+
+                // البحث عن جميع العناصر التي يمكن التركيز عليها (Inputs, Selects)
+                const form = event.target.form;
+                const index = Array.prototype.indexOf.call(form, event.target);
+                
+                // الانتقال إلى العنصر التالي إذا وجد
+                if (form.elements[index + 1]) {
+                    form.elements[index + 1].focus();
+                }
+            }
+        }
+    });
+</script>
 @endsection
