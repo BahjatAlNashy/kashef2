@@ -68,17 +68,17 @@
     align-items: flex-start;
     justify-content: space-between;
     padding-bottom: 16px;
-    border-bottom: 2.5px solid #0f172a;
+    /* border-bottom: 2.5px solid #0f172a; */
     margin-bottom: 24px;
 }
 .org-block p {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: 700;
     color: #0f172a;
     line-height: 2.1;
     margin: 0;
 }
-.org-block p:first-child { font-size: 15px; font-weight: 700; }
+/* .org-block p:first-child { font-size: 15px; font-weight: 700; } */
 
 .title-block { text-align: center; flex: 1; padding: 2px 12px 0; }
 .title-block h1 {
@@ -233,12 +233,12 @@
     }
 
     .doc-header {
-        border-bottom: 2px solid #000 !important;
+        /* border-bottom: 2px solid #000 !important; */
         margin-bottom: 16px !important;
         padding-bottom: 12px !important;
     }
-    .org-block p           { font-size: 13px !important; line-height: 1.9 !important; }
-    .org-block p:first-child { font-size: 14px !important; }
+    .org-block p           { font-size: 15px !important; line-height: 1.9 !important; }
+    /* .org-block p:first-child { font-size: 14px !important; } */
     .title-block h1        { font-size: 24px !important; }
 
     .status-pill {

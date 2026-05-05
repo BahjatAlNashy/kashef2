@@ -62,17 +62,17 @@
     align-items: flex-start;
     justify-content: space-between;
     padding-bottom: 16px;
-    border-bottom: 2.5px solid #0f172a;
+    /* border-bottom: 2.5px solid #0f172a; */
     margin-bottom: 24px;
 }
 .org-block p {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: 700;
     color: #0f172a;
     line-height: 1.8;
     margin: 0;
 }
-.org-block p:first-child { font-size: 15px; font-weight: 700; }
+/* .org-block p:first-child { font-size: 15px; font-weight: 700; } */
 
 .title-block { text-align: center; flex: 1; padding: 2px 12px 0; }
 .title-block h1 {
@@ -166,7 +166,7 @@
     .action-bar, nav, footer, .no-print { display: none !important; }
     .page-wrap { background: #fff !important; padding: 0 !important; }
     .a4 { width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
-    .doc-header { border-bottom: 2px solid #000 !important; }
+    /* .doc-header { border-bottom: 2px solid #000 !important; } */
     .field, .ta-field, .sig-cell { border-color: #000 !important; }
 }
 </style>
