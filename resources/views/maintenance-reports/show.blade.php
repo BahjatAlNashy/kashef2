@@ -45,8 +45,6 @@
 .btn-dark:hover { background: #1f2937; }
 .btn-success    { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
 .btn-success:hover { background: #dcfce7; }
-.btn-danger     { background: #fff5f5; color: #b91c1c; border-color: #fecaca; }
-.btn-danger:hover  { background: #fee2e2; }
 .btn-info       { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
 .btn-info:hover    { background: #dbeafe; }
 
@@ -68,7 +66,6 @@
     align-items: flex-start;
     justify-content: space-between;
     padding-bottom: 16px;
-    /* border-bottom: 2.5px solid #0f172a; */
     margin-bottom: 24px;
 }
 .org-block p {
@@ -78,7 +75,6 @@
     line-height: 2.1;
     margin: 0;
 }
-/* .org-block p:first-child { font-size: 15px; font-weight: 700; } */
 
 .title-block { text-align: center; flex: 1; padding: 2px 12px 0; }
 .title-block h1 {
@@ -105,7 +101,7 @@
 }
 .pill-pending  { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
 .pill-done     { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
-.pill-canceled { background: #fff5f5; color: #991b1b; border: 1px solid #fca5a5; }
+
 .spacer { width: 160px; flex-shrink: 0; }
 
 /* ── Field rows ── */
@@ -177,7 +173,6 @@
 .sig-row { display: flex; gap: 10px; margin-top: 4px; }
 .sig-cell {
     flex: 1;
-    /* border: 1.5px solid #94a3b8; */
     border-radius: 7px;
     padding: 14px 16px;
     text-align: center;
@@ -191,7 +186,6 @@
     margin-bottom: 10px;
     line-height: 1.5;
 }
-.sig-line { border-bottom: 1px solid #94a3b8; margin: 0 10px; }
 .sig-name { font-size: 17px; font-weight: 500; color: #1e293b; margin-top: 8px; }
 
 /* ── Meta row below sheet ── */
@@ -207,7 +201,7 @@
 .meta-row strong { color: #64748b; font-weight: 500; }
 
 /* ══════════════════════════════
-   PRINT
+    PRINT
 ══════════════════════════════ */
 @media print {
     @page { size: A4 portrait; margin: 1.2cm 1.5cm; }
@@ -233,12 +227,10 @@
     }
 
     .doc-header {
-        /* border-bottom: 2px solid #000 !important; */
         margin-bottom: 16px !important;
         padding-bottom: 12px !important;
     }
     .org-block p           { font-size: 15px !important; line-height: 1.9 !important; }
-    /* .org-block p:first-child { font-size: 14px !important; } */
     .title-block h1        { font-size: 24px !important; }
 
     .status-pill {
@@ -261,7 +253,7 @@
     .rule        { background: #c8cdd3 !important; margin: 16px 0 !important; }
 
     .sig-row     { gap: 8px !important; }
-    .sig-cell    { /* border-radius: 5px !important; */ padding: 12px 14px !important; }
+    .sig-cell    { padding: 12px 14px !important; }
     .sig-lbl     { font-size: 18px !important; margin-bottom: 10px !important; }
     .sig-name    { font-size: 18px !important; }
 }
@@ -281,11 +273,6 @@
                 <input type="hidden" name="status" value="تم الإنجاز">
                 <button class="btn btn-success">✓ إنهاء الكشف</button>
             </form>
-            <form action="{{ route('maintenance.status.update', $maintenanceReport) }}" method="POST" style="display:inline">
-                @csrf @method('PATCH')
-                <input type="hidden" name="status" value="تم الإلغاء">
-                <button class="btn btn-danger">✕ إلغاء الكشف</button>
-            </form>
         @endif
     </div>
 
@@ -304,8 +291,7 @@
                 <h1>كشف فني</h1>
                 <span class="status-pill no-print
                     @if($maintenanceReport->status == 'قيد التنفيذ')  pill-pending
-                    @elseif($maintenanceReport->status == 'تم الإنجاز') pill-done
-                    @else pill-canceled @endif">
+                    @else pill-done @endif">
                     <span class="dot"></span>{{ $maintenanceReport->status }}
                 </span>
             </div>
@@ -346,10 +332,9 @@
                 <span class="f-lbl">التاريخ</span>
                 <div class="f-val">{{ optional($maintenanceReport->report_date)->format('Y-m-d') ?? '—' }}</div>
             </div>
-           
         </div>
 
-         {{-- Initial inspection --}}
+        {{-- Initial inspection --}}
         <div class="ta-field">
             <span class="ta-lbl">الكشف الفني الأولي</span>
             <div class="ta-val">{{ $maintenanceReport->initial_inspection ?: '—' }}</div>
@@ -367,24 +352,20 @@
             </div>
         </div>
 
-
         <div class="rule"></div>
 
         {{-- Signatures --}}
         <div class="sig-row">
             <div class="sig-cell">
                 <span class="sig-lbl">المسؤول الفني</span>
-                <!-- <div class="sig-line"></div> -->
                 <div class="sig-name">{{ $maintenanceReport->technical_manager ?? '—' }}</div>
             </div>
             <div class="sig-cell">
                 <span class="sig-lbl">ر.د الصيانة والدعم الفني</span>
-                <!-- <div class="sig-line"></div> -->
                 <div class="sig-name">{{ $maintenanceReport->maintenance_head ?? '—' }}</div>
             </div>
             <div class="sig-cell">
                 <span class="sig-lbl">مدير المعلوماتية</span>
-                <!-- <div class="sig-line"></div> -->
                 <div class="sig-name">{{ $maintenanceReport->it_manager ?? '—' }}</div>
             </div>
         </div>

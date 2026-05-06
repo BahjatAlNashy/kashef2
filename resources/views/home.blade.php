@@ -9,7 +9,6 @@
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h3>لوحة التحكم - نظام إدارة الصيانة والمستودع</h3>
                         <div class="d-flex gap-2 flex-wrap">
-                            <!-- إدارة المستخدمين (للمدير فقط) -->
                             @if(auth()->user()->role == 'manager')
                                 <div class="border-end pe-2 me-2">
                                     <a href="{{ route('users.index') }}" class="btn btn-info">
@@ -18,8 +17,6 @@
                                     </a>
                                 </div>
                             @endif
-
-                            <!-- أزرار إنشاء جديد -->
                             <a href="{{ route('maintenance-reports.create') }}" class="btn btn-success">+ كشف فني</a>
                             <a href="{{ route('warehouse-deliveries.create') }}" class="btn btn-primary">+ تسليم مستودع</a>
                         </div>
@@ -37,7 +34,6 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
-                    <!-- جدول جميع الكشوف -->
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <h5>جميع الكشوف
@@ -59,7 +55,6 @@
                             </div>
                         </div>
 
-                        <!-- أزرار الفرز حسب الحالة -->
                         <div class="px-3 pt-2 pb-0">
                             <div class="btn-group mb-2" role="group">
                                 <a href="{{ route('home', ['type' => $type, 'search' => $search, 'status' => 'all']) }}"
@@ -69,7 +64,7 @@
                                     قيد التنفيذ <span class="badge bg-light text-dark ms-1">{{ $pendingCount }}</span>
                                 </a>
                                 <a href="{{ route('home', ['type' => $type, 'search' => $search, 'status' => 'completed']) }}"
-                                   class="btn btn-sm btn-success {{ $status == 'completed' ? 'active-filter' : '' }}">تم الإنجاز / تم الإلغاء</a>
+                                   class="btn btn-sm btn-success {{ $status == 'completed' ? 'active-filter' : '' }}">تم الإنجاز</a>
                             </div>
                         </div>
 
@@ -95,7 +90,6 @@
                                             @foreach($paginatedItems as $item)
                                                 @php $data = $item['data']; @endphp
                                                 @if($item['type'] === 'maintenance')
-                                                    {{-- صف كشف فني --}}
                                                     <tr class="report-row" data-type="maintenance" data-status="{{ $data->status }}" data-search="{{ strtolower($data->requesting_party . ' ' . ($data->serial_number ?? '')) }}">
                                                         <td class="row-number">{{ ($paginatedItems->currentPage() - 1) * $paginatedItems->perPage() + $loop->iteration }}</td>
                                                         <td><span class="badge bg-success">كشف فني</span></td>
@@ -107,10 +101,8 @@
                                                         <td>
                                                             @if($data->status == 'قيد التنفيذ')
                                                                 <span class="badge bg-warning">قيد التنفيذ</span>
-                                                            @elseif($data->status == 'تم الإنجاز')
-                                                                <span class="badge bg-success">تم الإنجاز</span>
                                                             @else
-                                                                <span class="badge bg-danger">تم الإلغاء</span>
+                                                                <span class="badge bg-success">تم الإنجاز</span>
                                                             @endif
                                                         </td>
                                                         <td>
@@ -125,11 +117,6 @@
                                                                         <input type="hidden" name="status" value="تم الإنجاز">
                                                                         <button class="btn btn-sm btn-success">إنهاء</button>
                                                                     </form>
-                                                                    <form action="{{ route('maintenance.status.update', $data) }}" method="POST" style="display:inline">
-                                                                        @csrf @method('PATCH')
-                                                                        <input type="hidden" name="status" value="تم الإلغاء">
-                                                                        <button class="btn btn-sm btn-danger">إلغاء</button>
-                                                                    </form>
                                                                 @endif
                                                             @endif
                                                             @if(auth()->user()->role == 'manager' || $data->created_by == auth()->id())
@@ -141,7 +128,6 @@
                                                         </td>
                                                     </tr>
                                                 @else
-                                                    {{-- صف تسليم مستودع --}}
                                                     <tr class="report-row" data-type="warehouse" data-status="none" data-search="{{ strtolower($data->requesting_party . ' ' . ($data->serial_number ?? '')) }}">
                                                         <td class="row-number">{{ ($paginatedItems->currentPage() - 1) * $paginatedItems->perPage() + $loop->iteration }}</td>
                                                         <td><span class="badge bg-primary">تسليم مستودع</span></td>
@@ -182,10 +168,8 @@
                                                     <td>
                                                         @if($report->status == 'قيد التنفيذ')
                                                             <span class="badge bg-warning">قيد التنفيذ</span>
-                                                        @elseif($report->status == 'تم الإنجاز')
-                                                            <span class="badge bg-success">تم الإنجاز</span>
                                                         @else
-                                                            <span class="badge bg-danger">تم الإلغاء</span>
+                                                            <span class="badge bg-success">تم الإنجاز</span>
                                                         @endif
                                                     </td>
                                                     <td>
@@ -199,11 +183,6 @@
                                                                     @csrf @method('PATCH')
                                                                     <input type="hidden" name="status" value="تم الإنجاز">
                                                                     <button class="btn btn-sm btn-success">إنهاء</button>
-                                                                </form>
-                                                                <form action="{{ route('maintenance.status.update', $report) }}" method="POST" style="display:inline">
-                                                                    @csrf @method('PATCH')
-                                                                    <input type="hidden" name="status" value="تم الإلغاء">
-                                                                    <button class="btn btn-sm btn-danger">إلغاء</button>
                                                                 </form>
                                                             @endif
                                                         @endif
@@ -249,7 +228,6 @@
                                 </table>
                             </div>
 
-                            {{-- روابط Pagination --}}
                             <div class="d-flex justify-content-center mt-4">
                                 @if(isset($paginatedItems))
                                     {{ $paginatedItems->appends(['type' => $type, 'search' => $search, 'status' => $status])->links('pagination::bootstrap-5') }}
@@ -268,9 +246,7 @@
 </div>
 
 <script>
-// متغيرات البحث
 let searchTimeout = null;
-
 document.getElementById('search-input').addEventListener('input', function(e) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(function() {
@@ -283,28 +259,13 @@ document.getElementById('search-input').addEventListener('input', function(e) {
 </script>
 
 <style>
-/* تأثير الزر النشط - يظهر كأنه مضغوط */
 .active-filter {
     box-shadow: inset 0 3px 5px rgba(0,0,0,0.3) !important;
     transform: translateY(1px);
     border: 2px solid #000 !important;
 }
-
-/* تأثيرات إضافية للزر النشط حسب نوعه */
-#btn-all.active-filter {
-    background-color: #0dcaf0 !important;
-    border-color: #000 !important;
-}
-
-#btn-pending.active-filter {
-    background-color: #d39e00 !important;
-    border-color: #000 !important;
-}
-
-#btn-completed.active-filter {
-    background-color: #1e7e34 !important;
-    border-color: #000 !important;
-}
-
+#btn-all.active-filter { background-color: #0dcaf0 !important; border-color: #000 !important; }
+#btn-pending.active-filter { background-color: #d39e00 !important; border-color: #000 !important; }
+#btn-completed.active-filter { background-color: #1e7e34 !important; border-color: #000 !important; }
 </style>
 @endsection
